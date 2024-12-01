@@ -11,23 +11,20 @@ module.exports = function (config) {
     ],
     client: {
       jasmine: {
-        // Puedes agregar configuraciones específicas de Jasmine aquí.
       },
-      clearContext: false // Deja el contexto de Jasmine HTML visible en la salida.
+      clearContext: false // leave Jasmine Spec Runner output visible in browser
     },
     jasmineHtmlReporter: {
-      suppressAll: true // Suprime todos los mensajes de log del reportero de Jasmine.
+      suppressAll: true // removes the duplicated traces
     },
     coverageReporter: {
       dir: require('path').join(__dirname, './coverage'),
       subdir: '.',
       reporters: [
-        { type: 'html' },
-        { type: 'text-summary' },
-        { type: 'lcovonly' } // Agregar esta línea
+        { type: 'html', subdir: 'html-report' },
+        { type: 'lcov', subdir: 'lcov-report' }
       ]
     },
-
     reporters: ['progress', 'kjhtml'],
     port: 9876,
     colors: true,
