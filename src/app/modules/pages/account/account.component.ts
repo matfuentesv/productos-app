@@ -11,10 +11,10 @@ import {
 import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from "@angular/material/snack-bar";
 import { NgClass, NgIf } from "@angular/common";
 import Swal from 'sweetalert2';
-import {User} from '../../shared/models/user';
-import {AuthService} from '../../core/services/auth/auth.service';
-import {DataService} from '../../core/services/data/data.service';
-import {RutValidatorDirective} from '../../shared/directives/ng2-rut/rut-validator.directive';
+import {User} from '../../../shared/models/user';
+import {AuthService} from '../../../core/services/auth/auth.service';
+import {DataService} from '../../../core/services/data/data.service';
+import {RutValidatorDirective} from '../../../shared/directives/ng2-rut/rut-validator.directive';
 
 @Component({
   selector: 'app-account',

@@ -3,10 +3,10 @@ import {CurrencyPipe, NgClass, NgForOf, NgIf} from "@angular/common";
 import {MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition} from "@angular/material/snack-bar";
 import {MatButton} from "@angular/material/button";
 import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
-import {CustomCurrencyPipe} from '../../shared/pipes/customCurrency';
-import {Products} from '../../shared/models/products';
-import {DataService} from '../../core/services/data/data.service';
-import {CartService} from '../../core/services/cart/cart.service';
+import {CustomCurrencyPipe} from '../../../shared/pipes/customCurrency';
+import {Products} from '../../../shared/models/products';
+import {DataService} from '../../../core/services/data/data.service';
+import {CartService} from '../../../core/services/cart/cart.service';
 
 declare var $: any;
 

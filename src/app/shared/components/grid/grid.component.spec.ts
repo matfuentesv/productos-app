@@ -10,8 +10,8 @@ describe('GridComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [GridComponent, MatProgressSpinnerModule], // Mueve GridComponent a imports
-      schemas: [CUSTOM_ELEMENTS_SCHEMA], // Permite ignorar errores de elementos personalizados
+      imports: [GridComponent, MatProgressSpinnerModule],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
     }).compileComponents();
 
     fixture = TestBed.createComponent(GridComponent);
@@ -97,10 +97,10 @@ describe('GridComponent', () => {
     const stars = component.getStars(3);
     expect(stars.length).toBe(5);
     expect(stars).toEqual([
-      'fas fa-star text-warning', // Estrellas llenas
       'fas fa-star text-warning',
       'fas fa-star text-warning',
-      'far fa-star text-warning', // Estrellas vacías
+      'fas fa-star text-warning',
+      'far fa-star text-warning',
       'far fa-star text-warning',
     ]);
   });

@@ -38,11 +38,11 @@ describe('CartComponent', () => {
     component.items = [mockItem];
     fixture.detectChanges();
 
-    // Actualiza la cantidad
+
     component.updateQuantity('Producto 1', 3);
     fixture.detectChanges();
 
-    // Verifica que la cantidad se actualizó correctamente
+
     expect(component.items[0].quantity).toBe(1);
   });
 
@@ -75,11 +75,11 @@ describe('CartComponent', () => {
     ];
     fixture.detectChanges();
 
-    // Elimina un producto
+
     component.removeItem('Producto 1');
     fixture.detectChanges();
 
-    // Verifica que el producto fue eliminado y que solo queda un producto en el carrito
+
     expect(component.items.length).toBe(0);
   });
 });

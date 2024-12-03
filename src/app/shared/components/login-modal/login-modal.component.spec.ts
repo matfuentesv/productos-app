@@ -1,7 +1,7 @@
 import { TestBed, ComponentFixture } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { LoginModalComponent } from './login-modal.component';
-import { HttpClientTestingModule } from '@angular/common/http/testing'; // Importar el módulo de pruebas para HttpClient
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 import { By } from '@angular/platform-browser';
 import {AuthService} from '../../../core/services/auth/auth.service';
@@ -13,12 +13,12 @@ describe('LoginModalComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [
-        LoginModalComponent, // Importa el componente standalone
-        ReactiveFormsModule, // Para formularios reactivos
-        HttpClientTestingModule, // Módulo de pruebas para HttpClient
+        LoginModalComponent,
+        ReactiveFormsModule,
+        HttpClientTestingModule,
       ],
       providers: [
-        AuthService, // Agrega el proveedor del servicio si es necesario
+        AuthService,
       ],
     }).compileComponents();
 

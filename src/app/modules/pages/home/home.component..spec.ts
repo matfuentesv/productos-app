@@ -2,7 +2,7 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {HomeComponent} from './home.component';
 import {ReactiveFormsModule} from '@angular/forms';
 import {CUSTOM_ELEMENTS_SCHEMA} from '@angular/core';
-import {DataService} from '../../core/services/data/data.service';
+import {DataService} from '../../../core/services/data/data.service';
 import {HttpClientModule} from '@angular/common/http';
 
 describe('HomeComponent', () => {
@@ -11,7 +11,7 @@ describe('HomeComponent', () => {
   let mockJQuery: any;
 
   beforeEach(async () => {
-    // Mock de jQuery
+
     mockJQuery = {
       hide: jasmine.createSpy('hide'),
       show: jasmine.createSpy('show'),

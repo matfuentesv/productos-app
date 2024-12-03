@@ -7,12 +7,12 @@ describe('FooterComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [FooterComponent], // Asegúrate de importar el componente como standalone
+      imports: [FooterComponent],
     }).compileComponents();
 
     fixture = TestBed.createComponent(FooterComponent);
     component = fixture.componentInstance;
-    fixture.detectChanges(); // Renderiza el DOM
+    fixture.detectChanges();
   });
 
   it('should create the component', () => {
