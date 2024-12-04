@@ -5,6 +5,7 @@ import {rutValidate} from 'rut-helpers';
 
 @Directive({
   selector: '[appValidateRut][ngModel],[appValidateRut][formControl]',
+  standalone: true,
   providers: [
     {provide: NG_VALIDATORS, useExisting: forwardRef(() => RutValidatorDirective), multi: true},
   ]

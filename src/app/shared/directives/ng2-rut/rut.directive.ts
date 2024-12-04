@@ -2,6 +2,7 @@ import {Directive, EventEmitter, HostListener, Output} from '@angular/core';
 import * as rutHelpers from 'rut-helpers';
 
 @Directive({
+  standalone: true,
   selector: '[appFormatRut]'
 })
 export class RutDirective {
