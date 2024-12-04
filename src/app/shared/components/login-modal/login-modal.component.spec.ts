@@ -1,89 +1,83 @@
-import { TestBed, ComponentFixture } from '@angular/core/testing';
-import { ReactiveFormsModule } from '@angular/forms';
-import { LoginModalComponent } from './login-modal.component';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
-
-import { By } from '@angular/platform-browser';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {ReactiveFormsModule} from '@angular/forms';
+import {MatDialog} from '@angular/material/dialog';
+import {Router} from '@angular/router';
 import {AuthService} from '../../../core/services/auth/auth.service';
+import {LoginModalComponent} from './login-modal.component';
 
 describe('LoginModalComponent', () => {
   let component: LoginModalComponent;
   let fixture: ComponentFixture<LoginModalComponent>;
+  let mockDialog: jasmine.SpyObj<MatDialog>;
+  let mockRouter: jasmine.SpyObj<Router>;
+  let mockAuthService: jasmine.SpyObj<AuthService>;
 
   beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [
-        LoginModalComponent,
-        ReactiveFormsModule,
-        HttpClientTestingModule,
-      ],
-      providers: [
-        AuthService,
-      ],
-    }).compileComponents();
+    mockDialog = jasmine.createSpyObj('MatDialog', ['closeAll']);
+    mockRouter = jasmine.createSpyObj('Router', ['navigate']);
+    mockAuthService = jasmine.createSpyObj('AuthService', ['login']);
 
+    await TestBed.configureTestingModule({
+      imports: [ReactiveFormsModule, LoginModalComponent],
+      providers: [
+        { provide: MatDialog, useValue: mockDialog },
+        { provide: Router, useValue: mockRouter },
+        { provide: AuthService, useValue: mockAuthService }
+      ]
+    }).compileComponents();
+  });
+
+  beforeEach(() => {
     fixture = TestBed.createComponent(LoginModalComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
 
-  it('should create the component', () => {
+  it('should create', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should render the form with email and password fields', () => {
-    const emailInput = fixture.debugElement.query(By.css('#email'));
-    const passwordInput = fixture.debugElement.query(By.css('#password'));
-
-    expect(emailInput).toBeTruthy();
-    expect(passwordInput).toBeTruthy();
+  it('should initialize the form', () => {
+    expect(component.loginForm).toBeDefined();
+    expect(component.loginForm.controls['email']).toBeDefined();
+    expect(component.loginForm.controls['password']).toBeDefined();
   });
 
-  it('should disable the submit button if the form is invalid', () => {
-    const submitButton = fixture.debugElement.query(By.css('button[type="submit"]')).nativeElement;
-
-    expect(submitButton.disabled).toBeTrue();
-
-    component.loginForm.setValue({
-      email: 'test@example.com',
-      password: 'password123',
-    });
-    fixture.detectChanges();
-
-    expect(submitButton.disabled).toBeFalse();
+  it('should close the dialog', () => {
+    component.close();
+    expect(mockDialog.closeAll).toHaveBeenCalled();
   });
 
-  it('should call onSubmit when the form is submitted', () => {
-    spyOn(component, 'onSubmit');
-    const form = fixture.debugElement.query(By.css('form'));
-    form.triggerEventHandler('ngSubmit', null);
+  it('should navigate to home on successful login', () => {
+    component.loginForm.setValue({ email: 'test@example.com', password: 'password' });
+    mockAuthService.login.and.returnValue(true);
 
-    expect(component.onSubmit).toHaveBeenCalled();
+    component.onSubmit();
+
+    expect(mockDialog.closeAll).toHaveBeenCalled();
+    expect(mockRouter.navigate).toHaveBeenCalledWith(['/home']);
   });
 
-  it('should call close when the close button is clicked', () => {
-    spyOn(component, 'close');
-    const closeButton = fixture.debugElement.query(By.css('.btn-close'));
-    closeButton.triggerEventHandler('click', null);
+  it('should set isValidUser to false on failed login', () => {
+    component.loginForm.setValue({ email: 'test@example.com', password: 'password' });
+    mockAuthService.login.and.returnValue(false);
 
-    expect(component.close).toHaveBeenCalled();
+    component.onSubmit();
+
+    expect(component.isValidUser).toBeFalse();
   });
 
-  it('should display email error message if email is invalid', () => {
-    const emailInput = component.loginForm.controls['email'];
-    emailInput.setValue('');
-    emailInput.markAsTouched();
-    fixture.detectChanges();
-
-    const errorMessage = fixture.debugElement.query(By.css('.error')).nativeElement.textContent;
-    expect(errorMessage).toContain('El correo es obligatorio');
+  it('should navigate to recover-password on recoverPassword', () => {
+    component.recoverPassword();
+    expect(mockDialog.closeAll).toHaveBeenCalled();
+    expect(mockRouter.navigate).toHaveBeenCalledWith(['/recover-password']);
   });
 
-  it('should show authentication error if isValidUser is false', () => {
-    component.isValidUser = false;
-    fixture.detectChanges();
-
-    const errorMessage = fixture.debugElement.query(By.css('.error')).nativeElement.textContent;
-    expect(errorMessage).toContain('Email y/o clave incorrectos');
+  it('should navigate to register on register', () => {
+    component.register();
+    expect(mockDialog.closeAll).toHaveBeenCalled();
+    expect(mockRouter.navigate).toHaveBeenCalledWith(['/register']);
   });
 });
+
+
