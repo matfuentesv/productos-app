@@ -1,48 +1,36 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {AccountComponent} from './account.component';
 import {ReactiveFormsModule} from '@angular/forms';
-import {MatSnackBarModule} from '@angular/material/snack-bar';
-import {NO_ERRORS_SCHEMA} from '@angular/core';
-import {of, throwError} from 'rxjs';
-import {DataService} from '../../../core/services/data/data.service';
+import {MatSnackBar} from '@angular/material/snack-bar';
+import {NgClass, NgIf} from '@angular/common';
+import Swal from 'sweetalert2';
+import {AccountComponent} from './account.component';
 import {AuthService} from '../../../core/services/auth/auth.service';
 import {User} from '../../../shared/models/user';
+import {HttpClientTestingModule} from '@angular/common/http/testing';
 
 describe('AccountComponent', () => {
   let component: AccountComponent;
   let fixture: ComponentFixture<AccountComponent>;
-  let dataServiceSpy: jasmine.SpyObj<DataService>;
-  let authServiceSpy: jasmine.SpyObj<AuthService>;
+  let mockAuthService: jasmine.SpyObj<AuthService>;
+  let mockSnackBar: jasmine.SpyObj<MatSnackBar>;
 
   beforeEach(async () => {
-    const dataSpy = jasmine.createSpyObj('DataService', ['getUsers', 'addUser']);
-    const authSpy = jasmine.createSpyObj('AuthService', [
-      'getUser',
-      'loadUsers',
-      'isLoggedIn',
-      'userNameSubject',
-      'userRoleSubject',
-    ]);
-
-    // Mock para el método getUser
-    authSpy.getUser.and.returnValue(of({ id: 1, firstName: 'Test', roles: ['admin'] }));
-
-    authSpy.loadUsers.and.returnValue(of([])); // Simula el método loadUsers
-    authSpy.isLoggedIn = { next: jasmine.createSpy('next') } as any; // Simula el comportamiento de isLoggedIn
-    authSpy.userNameSubject = { next: jasmine.createSpy('next') } as any; // Simula el comportamiento de userNameSubject
-    authSpy.userRoleSubject = { next: jasmine.createSpy('next') } as any; // Simula el comportamiento de userRoleSubject
+    mockAuthService = jasmine.createSpyObj('AuthService', ['getUser', 'loadUsers', 'isLoggedIn', 'userNameSubject', 'userRoleSubject']);
+    mockSnackBar = jasmine.createSpyObj('MatSnackBar', ['open']);
 
     await TestBed.configureTestingModule({
-      imports: [AccountComponent, ReactiveFormsModule, MatSnackBarModule],
-      providers: [
-        { provide: DataService, useValue: dataSpy },
-        { provide: AuthService, useValue: authSpy },
+      imports: [
+        ReactiveFormsModule,
+        NgIf,
+        NgClass,
+        AccountComponent,
+        HttpClientTestingModule
       ],
-      schemas: [NO_ERRORS_SCHEMA],
+      providers: [
+        { provide: AuthService, useValue: mockAuthService },
+        { provide: MatSnackBar, useValue: mockSnackBar }
+      ]
     }).compileComponents();
-
-    dataServiceSpy = TestBed.inject(DataService) as jasmine.SpyObj<DataService>;
-    authServiceSpy = TestBed.inject(AuthService) as jasmine.SpyObj<AuthService>;
   });
 
   beforeEach(() => {
@@ -55,40 +43,68 @@ describe('AccountComponent', () => {
     expect(component).toBeTruthy();
   });
 
-
-
-  it('loadUsers should call getUsers and handle success', async () => {
-    const mockUsers: User[] = [
-      {
-        id: 1,
-        firstName: 'John',
-        lastName: 'Doe',
-        rut: '12345678-9',
-        email: 'john@example.com',
-        phone: '987654321',
-        address: '123 Street',
-        password: 'Password1',
-        roles: ['user'],
-      },
-    ];
-    dataServiceSpy.getUsers.and.returnValue(of(mockUsers));
-    spyOn(console, 'error');
-
-    await component.loadUsers();
-
-    expect(dataServiceSpy.getUsers).toHaveBeenCalled();
-    expect(console.error).not.toHaveBeenCalled();
+  it('should initialize the form', () => {
+    expect(component.accountForm).toBeDefined();
+    expect(component.accountForm.controls['firstName']).toBeDefined();
+    expect(component.accountForm.controls['lastName']).toBeDefined();
+    expect(component.accountForm.controls['rut']).toBeDefined();
+    expect(component.accountForm.controls['email']).toBeDefined();
+    expect(component.accountForm.controls['phone']).toBeDefined();
+    expect(component.accountForm.controls['address']).toBeDefined();
+    expect(component.accountForm.controls['password']).toBeDefined();
   });
 
-  it('loadUsers should handle errors gracefully', async () => {
-    dataServiceSpy.getUsers.and.returnValue(throwError(() => new Error('Error loading users')));
-    spyOn(console, 'error');
+  it('should patch the form with user data on init', () => {
+    const user: User = {
+      id: 1,
+      firstName: 'John',
+      lastName: 'Doe',
+      rut: '12345678-9',
+      email: 'john.doe@example.com',
+      phone: '1234567890',
+      address: '123 Main St',
+      password: 'Password1',
+      roles: ['user']
+    };
+    mockAuthService.getUser.and.returnValue(user);
+    mockAuthService.loadUsers.and.returnValue([user]);
 
-    await component.loadUsers();
+    component.ngOnInit();
 
-    expect(console.error).toHaveBeenCalledWith('Error loading users:', jasmine.any(Error));
+    expect(component.accountForm.value).toEqual({
+      firstName: 'John',
+      lastName: 'Doe',
+      rut: '12345678-9',
+      email: 'john.doe@example.com',
+      phone: '1234567890',
+      address: '123 Main St',
+      password: 'Password1'
+    });
   });
 
+  it('should validate numbers correctly', () => {
+    const event = { charCode: 49 }; // '1'
+    expect(component.validateNumbers(event)).toBeTrue();
 
+    const invalidEvent = { charCode: 65 }; // 'A'
+    expect(component.validateNumbers(invalidEvent)).toBeFalse();
+  });
 
+  it('should not update user if form is invalid', () => {
+    component.accountForm.setValue({
+      firstName: '',
+      lastName: '',
+      rut: '',
+      email: '',
+      phone: '',
+      address: '',
+      password: ''
+    });
+
+    spyOn(Swal, 'fire').and.returnValue(Promise.resolve({ isConfirmed: true, isDenied: false, isDismissed: false }));
+
+    component.onSubmit();
+
+    expect(mockSnackBar.open).not.toHaveBeenCalled();
+  });
 });

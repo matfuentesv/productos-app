@@ -1,73 +1,169 @@
-import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {RegisterComponent} from './register.component';
-import {HttpClientTestingModule} from '@angular/common/http/testing';
+import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {ReactiveFormsModule} from '@angular/forms';
-import {RouterTestingModule} from '@angular/router/testing';
-import {AuthService} from "../../../core/services/auth/auth.service";
-import {DataService} from "../../../core/services/data/data.service";
-
+import {MatSnackBar} from '@angular/material/snack-bar';
+import {NgClass, NgIf} from '@angular/common';
+import {Router} from '@angular/router';
+import {MatDialog} from '@angular/material/dialog';
+import {of, throwError} from 'rxjs';
+import {RegisterComponent} from './register.component';
+import {AuthService} from '../../../core/services/auth/auth.service';
+import {DataService} from '../../../core/services/data/data.service';
+import {User} from '../../../shared/models/user';
+import {LoginModalComponent} from '../../../shared/components/login-modal/login-modal.component';
 
 describe('RegisterComponent', () => {
   let component: RegisterComponent;
   let fixture: ComponentFixture<RegisterComponent>;
+  let mockAuthService: jasmine.SpyObj<AuthService>;
+  let mockDataService: jasmine.SpyObj<DataService>;
+  let mockSnackBar: jasmine.SpyObj<MatSnackBar>;
+  let mockRouter: jasmine.SpyObj<Router>;
+  let mockDialog: jasmine.SpyObj<MatDialog>;
 
   beforeEach(async () => {
+    mockAuthService = jasmine.createSpyObj('AuthService', ['getUser', 'loadUsers', 'isLoggedIn', 'userNameSubject', 'userRoleSubject']);
+    mockDataService = jasmine.createSpyObj('DataService', ['addUser', 'getUsers']);
+    mockSnackBar = jasmine.createSpyObj('MatSnackBar', ['open']);
+    mockRouter = jasmine.createSpyObj('Router', ['navigate']);
+    mockDialog = jasmine.createSpyObj('MatDialog', ['open']);
+
     await TestBed.configureTestingModule({
       imports: [
-        HttpClientTestingModule,
         ReactiveFormsModule,
-        RouterTestingModule,
+        NgIf,
+        NgClass,
         RegisterComponent
       ],
-      providers: [AuthService, DataService]
-    })
-      .compileComponents();
-
-    fixture = TestBed.createComponent(RegisterComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges(); // Inicializa el componente y su formulario
+      providers: [
+        { provide: AuthService, useValue: mockAuthService },
+        { provide: DataService, useValue: mockDataService },
+        { provide: MatSnackBar, useValue: mockSnackBar },
+        { provide: Router, useValue: mockRouter },
+        { provide: MatDialog, useValue: mockDialog }
+      ]
+    }).compileComponents();
   });
 
-  it('debería crear el componente', () => {
+  beforeEach(() => {
+    fixture = TestBed.createComponent(RegisterComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  it('should create', () => {
     expect(component).toBeTruthy();
   });
 
-  it('debería inicializar el formulario correctamente', () => {
-    const form = component.registerForm;
-    console.log('Formulario inicializado:', form);
-    expect(form).toBeDefined();
-    expect(form.contains('firstName')).toBeTrue();
-    expect(form.contains('lastName')).toBeTrue();
-    expect(form.contains('rut')).toBeTrue();
-    expect(form.contains('phone')).toBeTrue();
-    expect(form.contains('email')).toBeTrue();
-    expect(form.contains('address')).toBeTrue();
-    expect(form.contains('password')).toBeTrue();
-    expect(form.contains('promo')).toBeTrue();
+  it('should initialize the form', () => {
+    expect(component.registerForm).toBeDefined();
+    expect(component.registerForm.controls['firstName']).toBeDefined();
+    expect(component.registerForm.controls['lastName']).toBeDefined();
+    expect(component.registerForm.controls['rut']).toBeDefined();
+    expect(component.registerForm.controls['email']).toBeDefined();
+    expect(component.registerForm.controls['phone']).toBeDefined();
+    expect(component.registerForm.controls['address']).toBeDefined();
+    expect(component.registerForm.controls['password']).toBeDefined();
+    expect(component.registerForm.controls['promo']).toBeDefined();
   });
 
-  it('debería marcar el formulario como inválido si los campos están vacíos', () => {
-    const form = component.registerForm;
-    form.get('firstName')?.setValue('');
-    form.get('lastName')?.setValue('');
-    form.get('email')?.setValue('');
-    form.get('password')?.setValue('');
-    form.get('confirmPassword')?.setValue('');
-    console.log('Formulario inválido:', form.valid);
-    expect(form.valid).toBeFalse();
+  it('should open login modal', () => {
+    component.openModal();
+    expect(mockDialog.open).toHaveBeenCalledWith(LoginModalComponent, {});
   });
 
+  it('should not submit form if invalid', fakeAsync(() => {
+    component.registerForm.setValue({
+      firstName: '',
+      lastName: '',
+      rut: '',
+      phone: '',
+      address: '',
+      email: '',
+      password: '',
+      promo: false
+    });
 
+    component.onSubmit();
+    tick();
 
-  it('debería llamar al método de envío al enviar el formulario', () => {
-    spyOn(component, 'onSubmit').and.callThrough();
-    const form = component.registerForm;
-    form.get('firstName')?.setValue('John');
-    form.get('lastName')?.setValue('Doe');
-    form.get('email')?.setValue('john.doe@example.com');
-    form.get('password')?.setValue('Password1');
-    form.get('confirmPassword')?.setValue('Password1');
-    fixture.nativeElement.querySelector('form').dispatchEvent(new Event('submit'));
-    expect(component.onSubmit).toHaveBeenCalled();
-  });
+    expect(mockDataService.addUser).not.toHaveBeenCalled();
+    expect(mockSnackBar.open).not.toHaveBeenCalled();
+    expect(mockRouter.navigate).not.toHaveBeenCalled();
+  }));
+
+  it('should submit form if valid', fakeAsync(() => {
+    const user: User = {
+      id: 10,
+      firstName: 'Jane',
+      lastName: 'Doe',
+      rut: '19.033.397-3',
+      email: 'jane.doe@example.com',
+      phone: '0987654321',
+      address: '456 Main St',
+      password: 'Password2',
+      roles: ['admin']
+    };
+    mockAuthService.loadUsers.and.returnValue([user]);
+    mockAuthService.getUser.and.returnValue(user);
+    mockDataService.addUser.and.returnValue(of({}));
+    mockDataService.getUsers.and.returnValue(of([user]));
+
+    component.ngOnInit();
+    component.registerForm.setValue({
+      firstName: 'Jane',
+      lastName: 'Doe',
+      rut: '98765432-1',
+      phone: '0987654321',
+      address: '456 Main St',
+      email: 'jane.doe@example.com',
+      password: 'Password2',
+      promo: true
+    });
+
+    component.onSubmit();
+    tick();
+
+    expect(mockDataService.addUser).toHaveBeenCalled();
+
+  }));
+
+  it('should handle error on form submission', fakeAsync(() => {
+    const user: User = {
+      id: 1,
+      firstName: 'Jane',
+      lastName: 'Doe',
+      rut: '98765432-1',
+      email: 'jane.doe@example.com',
+      phone: '0987654321',
+      address: '456 Main St',
+      password: 'Password2',
+      roles: ['admin']
+    };
+    mockAuthService.loadUsers.and.returnValue([user]);
+    mockAuthService.getUser.and.returnValue(user);
+    mockDataService.addUser.and.returnValue(throwError('Service error'));
+
+    component.ngOnInit();
+    component.registerForm.setValue({
+      firstName: 'Jane',
+      lastName: 'Doe',
+      rut: '98765432-1',
+      phone: '0987654321',
+      address: '456 Main St',
+      email: 'jane.doe@example.com',
+      password: 'Password2',
+      promo: true
+    });
+
+    component.onSubmit();
+    tick();
+
+    expect(mockDataService.addUser).toHaveBeenCalled();
+    expect(mockSnackBar.open).toHaveBeenCalledWith('Error en el registro o login', 'Cerrar', {
+      duration: 3000,
+      horizontalPosition: 'start',
+      verticalPosition: 'bottom'
+    });
+    expect(mockRouter.navigate).not.toHaveBeenCalled();
+  }));
 });
