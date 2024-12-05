@@ -1,95 +1,151 @@
-import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {TestBed} from '@angular/core/testing';
 import {HomeComponent} from './home.component';
-import {ReactiveFormsModule} from '@angular/forms';
-import {CUSTOM_ELEMENTS_SCHEMA} from '@angular/core';
+import {MatSnackBar} from '@angular/material/snack-bar';
 import {DataService} from '../../../core/services/data/data.service';
-import {HttpClientModule} from '@angular/common/http';
+import {of, throwError} from 'rxjs';
+import {ProductsResponse} from '../../../shared/models/products';
+
+
+const mockProductsResponse: ProductsResponse = {
+  notebooks: [],
+  cellPhones: [],
+  coffeeMakers: [],
+  airConditioning: [],
+  outstanding: [
+    {
+
+      name: 'Product 1',
+      price: 100,
+      discount: 10,
+      description: 'Description 1',
+      image: 'image1.jpg',
+      category: 'Category 1',
+      originalPrice: 110,
+      rating: 4,
+      reviews: 10,
+    },
+    {
+
+      name: 'Product 2',
+      price: 200,
+      discount: 20,
+      description: 'Description 2',
+      image: 'image2.jpg',
+      category: 'Category 2',
+      originalPrice: 250,
+      rating: 5,
+      reviews: 20,
+    },
+  ],
+};
 
 describe('HomeComponent', () => {
   let component: HomeComponent;
-  let fixture: ComponentFixture<HomeComponent>;
-  let mockJQuery: any;
+  let snackBar: jasmine.SpyObj<MatSnackBar>;
+  let dataService: jasmine.SpyObj<DataService>;
 
-  beforeEach(async () => {
+  beforeEach(() => {
+    snackBar = jasmine.createSpyObj('MatSnackBar', ['open']);
+    dataService = jasmine.createSpyObj('DataService', ['getProducts']);
 
-    mockJQuery = {
-      hide: jasmine.createSpy('hide'),
-      show: jasmine.createSpy('show'),
-      css: jasmine.createSpy('css'),
-    };
+    TestBed.configureTestingModule({
+      imports: [HomeComponent],
+      providers: [
+        { provide: MatSnackBar, useValue: snackBar },
+        { provide: DataService, useValue: dataService },
+      ],
+    });
 
-
-    await TestBed.configureTestingModule({
-      imports: [HomeComponent,ReactiveFormsModule,
-        HttpClientModule],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA],
-      providers:[DataService]
-    }).compileComponents();
-
-    fixture = TestBed.createComponent(HomeComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
+    component = TestBed.createComponent(HomeComponent).componentInstance;
   });
 
-  it('should create the component', () => {
-    expect(component).toBeTruthy();
+  it('should load products and chunk them correctly', () => {
+    dataService.getProducts.and.returnValue(of(mockProductsResponse));
+
+    component.ngOnInit();
+
+    expect(component.products).toEqual(mockProductsResponse.outstanding);
+    expect(component.chunkedProducts.length).toBeGreaterThan(0);
+    expect(component.loading).toBeFalse();
   });
 
-  it('should calculate star ratings correctly', () => {
-    const stars = component.getStars(3.5);
-    expect(stars.length).toBe(5);
-    expect(stars.filter((star) => star === 'fas fa-star').length).toBe(0);
+  it('should handle error when loading products', () => {
+    const consoleSpy = spyOn(console, 'error');
+    dataService.getProducts.and.returnValue(throwError(() => new Error('Error loading products')));
+
+    component.ngOnInit();
+
+    expect(consoleSpy).toHaveBeenCalledWith(jasmine.any(Error));
+    expect(component.loading).toBeFalse();
   });
 
-  it('should display products in the carousel when loading is false', () => {
+  it('should add product to cart and show snackbar', () => {
+    const mockProduct = mockProductsResponse.outstanding[0];
+
+    component.addToCart(mockProduct);
+
+    expect(snackBar.open).toHaveBeenCalledWith(
+      'Producto agregado al carrito!',
+      '',
+      { duration: 3000, horizontalPosition: 'start', verticalPosition: 'bottom', panelClass: ['custom-snackbar'] }
+    );
+  });
+
+  it('should return the correct star classes based on rating', () => {
+    const fullStars = component.getStars(3);
+    const emptyStars = component.getStars(0);
+    const allFullStars = component.getStars(5);
+
+    expect(fullStars).toEqual([
+      'fas fa-star text-warning',
+      'fas fa-star text-warning',
+      'fas fa-star text-warning',
+      'far fa-star text-warning',
+      'far fa-star text-warning',
+    ]);
+    expect(emptyStars).toEqual([
+      'far fa-star text-warning',
+      'far fa-star text-warning',
+      'far fa-star text-warning',
+      'far fa-star text-warning',
+      'far fa-star text-warning',
+    ]);
+    expect(allFullStars).toEqual([
+      'fas fa-star text-warning',
+      'fas fa-star text-warning',
+      'fas fa-star text-warning',
+      'fas fa-star text-warning',
+      'fas fa-star text-warning',
+    ]);
+  });
+
+  it('should show spinner when loading is true in ngAfterViewInit', () => {
+    const spinner = document.createElement('div');
+    spinner.id = 'spinner';
+    spinner.classList.add('hidden');
+    document.body.appendChild(spinner);
+
+    component.loading = true;
+    component.ngAfterViewInit();
+
+    expect(spinner.classList.contains('hidden')).toBeFalse();
+
+    // Clean up
+    document.body.removeChild(spinner);
+  });
+
+  it('should hide spinner when loading is false in ngAfterViewInit', () => {
+    const spinner = document.createElement('div');
+    spinner.id = 'spinner';
+    document.body.appendChild(spinner);
+
     component.loading = false;
-    component.products = [
-      { name: 'Product 1', price: 100, discount: 10, description: '', image: '', category: '', originalPrice: 110, rating: 4.5, reviews: 10 },
-      { name: 'Product 2', price: 200, discount: 20, description: '', image: '', category: '', originalPrice: 220, rating: 3.5, reviews: 20 },
-    ];
-    fixture.detectChanges();
-    const compiled = fixture.nativeElement as HTMLElement;
-    const carouselItems = compiled.querySelectorAll('.carousel-item');
-    expect(carouselItems.length).toBe(0);
+    component.ngAfterViewInit();
+
+    expect(spinner.classList.contains('hidden')).toBeTrue();
+
+    // Clean up
+    document.body.removeChild(spinner);
   });
-
-  it('should divide an array into chunks of the given size', () => {
-    const inputArray = [1, 2, 3, 4, 5, 6, 7];
-    const chunkSize = 3;
-
-    const result = component.chunk(inputArray, chunkSize);
-
-    expect(result).toEqual([[1, 2, 3], [4, 5, 6], [7]]);
-  });
-
-  it('should handle empty arrays', () => {
-    const inputArray: any[] = [];
-    const chunkSize = 2;
-
-    const result = component.chunk(inputArray, chunkSize);
-
-    expect(result).toEqual([]);
-  });
-
-  it('should handle chunk size greater than the array length', () => {
-    const inputArray = [1, 2, 3];
-    const chunkSize = 5;
-
-    const result = component.chunk(inputArray, chunkSize);
-
-    expect(result).toEqual([[1, 2, 3]]);
-  });
-
-  it('should handle chunk size of 1', () => {
-    const inputArray = [1, 2, 3, 4];
-    const chunkSize = 1;
-
-    const result = component.chunk(inputArray, chunkSize);
-
-    expect(result).toEqual([[1], [2], [3], [4]]);
-  });
-
-
-
 
 });

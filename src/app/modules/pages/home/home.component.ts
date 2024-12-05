@@ -36,7 +36,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
   loading: boolean = true;
 
   constructor(private dataService: DataService,
-              private cartService: CartService,
+              public cartService: CartService,
               private snackBar: MatSnackBar) { }
 
   ngOnInit(): void {
