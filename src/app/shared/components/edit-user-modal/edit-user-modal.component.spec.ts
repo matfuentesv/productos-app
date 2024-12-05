@@ -108,4 +108,27 @@ describe('EditUserModalComponent', () => {
     expect(authService.userRoleSubject.next).toHaveBeenCalledWith('admin');
     expect(dialogRef.close).toHaveBeenCalledWith(1);
   });
+
+  it('should return false for invalid character codes in validateNumbers', () => {
+    expect(component.validateNumbers({ charCode: 65 })).toBeFalse(); // 'A'
+    expect(component.validateNumbers({ charCode: 35 })).toBeFalse(); // '#'
+  });
+
+  it('should call MatSnackBar.open with correct arguments on handleRegistrationError', () => {
+    component.handleRegistrationError();
+    expect(snackBar.open).toHaveBeenCalledWith(
+      'Error en el registro o login',
+      'Cerrar',
+      { duration: 3000, horizontalPosition: 'start', verticalPosition: 'bottom' }
+    );
+  });
+
+  it('should call MatSnackBar.open with correct arguments on handleLoginError', () => {
+    component.handleLoginError();
+    expect(snackBar.open).toHaveBeenCalledWith(
+      'Error en el registro o login',
+      'Cerrar',
+      { duration: 3000, horizontalPosition: 'start', verticalPosition: 'bottom' }
+    );
+  });
 });
