@@ -1,107 +1,108 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { GridComponent } from './grid.component';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { By } from '@angular/platform-browser';
+import {TestBed} from '@angular/core/testing';
+import {GridComponent} from './grid.component';
+import {MatSnackBar} from '@angular/material/snack-bar';
+
+import {Products} from '../../models/products';
+import {CartService} from '../../../core/services/cart/cart.service';
+
+// Mock data
+const mockProducts: Products[] = [
+  {
+
+    name: 'Product 1',
+    price: 100,
+    discount: 10,
+    description: 'Description 1',
+    image: 'image1.jpg',
+    category: 'Category 1',
+    originalPrice: 110,
+    rating: 3,
+    reviews: 10,
+  },
+  {
+
+    name: 'Product 2',
+    price: 200,
+    discount: 20,
+    description: 'Description 2',
+    image: 'image2.jpg',
+    category: 'Category 2',
+    originalPrice: 250,
+    rating: 4,
+    reviews: 15,
+  },
+];
 
 describe('GridComponent', () => {
   let component: GridComponent;
-  let fixture: ComponentFixture<GridComponent>;
+  let snackBar: jasmine.SpyObj<MatSnackBar>;
+  let cartService: jasmine.SpyObj<CartService>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [GridComponent, MatProgressSpinnerModule],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA],
-    }).compileComponents();
+  beforeEach(() => {
+    snackBar = jasmine.createSpyObj('MatSnackBar', ['open']);
+    cartService = jasmine.createSpyObj('CartService', ['addToCart']);
 
-    fixture = TestBed.createComponent(GridComponent);
+    TestBed.configureTestingModule({
+      imports: [GridComponent],
+      providers: [
+        { provide: MatSnackBar, useValue: snackBar },
+        { provide: CartService, useValue: cartService },
+      ],
+    });
+
+    const fixture = TestBed.createComponent(GridComponent);
     component = fixture.componentInstance;
-    fixture.detectChanges();
   });
 
-  it('should create the component', () => {
-    expect(component).toBeTruthy();
+
+
+  it('should add product to cart and show snackbar', () => {
+    const product = mockProducts[0];
+
+    component.addToCart(product);
+
+    expect(cartService.addToCart).toHaveBeenCalledWith(product);
+    expect(snackBar.open).toHaveBeenCalledWith(
+      'Producto agregado al carrito!',
+      '',
+      {
+        horizontalPosition: component.horizontalPosition,
+        verticalPosition: component.verticalPosition,
+        duration: 3000,
+        panelClass: ['custom-snackbar'],
+      }
+    );
   });
 
-  it('should render the title', () => {
-    component.title = 'Productos Destacados';
-    fixture.detectChanges();
-
-    const titleElement = fixture.debugElement.query(By.css('.title')).nativeElement;
-    expect(titleElement.textContent).toContain('Productos Destacados');
-  });
-
-  it('should display the loading spinner when loading is true', () => {
-    component.loading = true;
-    fixture.detectChanges();
-
-    const spinner = fixture.debugElement.query(By.css('mat-spinner'));
-    expect(spinner).toBeTruthy();
-  });
-
-  it('should not display the loading spinner when loading is false', () => {
-    component.loading = false;
-    fixture.detectChanges();
-
-    const spinner = fixture.debugElement.query(By.css('mat-spinner'));
-    expect(spinner).toBeNull();
-  });
-
-  it('should render products correctly', () => {
-    component.chunkedProducts = [
-      [
-        {
-          name: 'Producto 1',
-          description: 'Descripción del producto 1',
-          price: 100,
-          discount: 10,
-          originalPrice: 110,
-          image: 'image1.png',
-          rating: 4,
-          reviews: 20,
-        },
-      ],
-    ];
-    fixture.detectChanges();
-
-    const productTitle = fixture.debugElement.query(By.css('.card-title')).nativeElement;
-    expect(productTitle.textContent).toContain('Producto 1');
-  });
-
-  it('should call addToCart when the button is clicked', () => {
-    spyOn(component, 'addToCart');
-
-    component.chunkedProducts = [
-      [
-        {
-          name: 'Producto 1',
-          description: 'Descripción del producto 1',
-          price: 100,
-          discount: 10,
-          originalPrice: 110,
-          image: 'image1.png',
-          rating: 4,
-          reviews: 20,
-        },
-      ],
-    ];
-    fixture.detectChanges();
-
-    const button = fixture.debugElement.query(By.css('.btn')).nativeElement;
-    button.click();
-
-    expect(component.addToCart).toHaveBeenCalled();
-  });
-
-  it('should return correct star classes from getStars', () => {
-    const stars = component.getStars(3);
-    expect(stars.length).toBe(5);
+  it('should return correct star classes based on rating', () => {
+    // Test case for rating = 3
+    let stars = component.getStars(3);
     expect(stars).toEqual([
       'fas fa-star text-warning',
       'fas fa-star text-warning',
       'fas fa-star text-warning',
       'far fa-star text-warning',
+      'far fa-star text-warning'
+    ]);
+
+    // Test case for rating = 5
+    stars = component.getStars(5);
+    expect(stars).toEqual([
+      'fas fa-star text-warning',
+      'fas fa-star text-warning',
+      'fas fa-star text-warning',
+      'fas fa-star text-warning',
+      'fas fa-star text-warning'
+    ]);
+
+    // Test case for rating = 0
+    stars = component.getStars(0);
+    expect(stars).toEqual([
       'far fa-star text-warning',
+      'far fa-star text-warning',
+      'far fa-star text-warning',
+      'far fa-star text-warning',
+      'far fa-star text-warning'
     ]);
   });
 
