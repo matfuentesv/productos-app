@@ -120,4 +120,20 @@ export class EditUserModalComponent  implements OnInit{
     return (event.charCode >= 48 && event.charCode <= 57) || event.charCode === 107;
   }
 
+  handleRegistrationError() {
+    this.snackBar.open(
+      'Error en el registro o login',
+      'Cerrar',
+      { duration: 3000, horizontalPosition: 'start', verticalPosition: 'bottom' }
+    );
+  }
+
+  handleLoginError() {
+    this.snackBar.open(
+      'Error en el registro o login',
+      'Cerrar',
+      { duration: 3000, horizontalPosition: 'start', verticalPosition: 'bottom' }
+    );
+  }
+
 }
