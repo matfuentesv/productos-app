@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {
   AbstractControl,
   FormBuilder,
@@ -8,8 +8,8 @@ import {
   Validators
 } from "@angular/forms";
 
-import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from "@angular/material/snack-bar";
-import { NgClass, NgIf } from "@angular/common";
+import {MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition} from "@angular/material/snack-bar";
+import {NgClass, NgIf} from "@angular/common";
 import Swal from 'sweetalert2';
 import {User} from '../../../shared/models/user';
 import {AuthService} from '../../../core/services/auth/auth.service';
@@ -168,11 +168,7 @@ export class AccountComponent implements OnInit {
     return (event.charCode >= 48 && event.charCode <= 57) || event.charCode === 107;
   }
   async loadUsers() {
-    try {
       await this.dataService.getUsers().toPromise();
-    } catch (error) {
-      console.error('Error loading users:', error);
-    }
   }
 
 

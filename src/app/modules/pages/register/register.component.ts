@@ -142,8 +142,6 @@ export class RegisterComponent implements OnInit {
             panelClass: ['custom-snackbar']
           });
           this.router.navigate(['/home']);
-        } else {
-          throw new Error('Error en el inicio de sesión');
         }
       } catch (error) {
         this.snackBar.open('Error en el registro o login', 'Cerrar', {
@@ -160,11 +158,7 @@ export class RegisterComponent implements OnInit {
   }
 
   async loadUsers() {
-    try {
       await this.dataService.getUsers().toPromise();
-    } catch (error) {
-      console.error('Error loading users:', error);
-    }
   }
 
 
