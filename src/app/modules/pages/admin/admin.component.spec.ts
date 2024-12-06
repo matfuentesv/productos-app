@@ -3,7 +3,7 @@ import {HttpClientModule} from '@angular/common/http';
 import {MatPaginatorModule} from '@angular/material/paginator';
 import {MatTableModule} from '@angular/material/table';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {ReactiveFormsModule} from '@angular/forms';
+import {FormControl, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {MatDialog} from '@angular/material/dialog';
 import {AdminComponent} from './admin.component';
 
@@ -36,6 +36,15 @@ describe('AdminComponent - Dialogs and Methods', () => {
 
     fixture = TestBed.createComponent(AdminComponent);
     component = fixture.componentInstance;
+
+    // Inicializar el formulario
+    component.productForm = new FormGroup({
+      productName: new FormControl('', [Validators.required]),
+      description: new FormControl('', [Validators.required]),
+      price: new FormControl('', [Validators.required, Validators.min(0)]),
+      category: new FormControl('', [Validators.required]),
+    });
+
     fixture.detectChanges();
   });
 
@@ -81,5 +90,44 @@ describe('AdminComponent - Dialogs and Methods', () => {
     expect(dialogSpy.open).toHaveBeenCalledWith(EditUserModalComponent, { data: { users: component.user, user: userMock }, disableClose: true });
     expect(component.ngZone.run).toHaveBeenCalled();
     expect(component.loadData).toHaveBeenCalled();
+  });
+
+  it('should validate productName as invalid when empty and touched', () => {
+    const productNameControl = component.productForm.get('productName');
+    productNameControl?.markAsTouched();
+    expect(component.validProductName).toBeTrue();
+
+    productNameControl?.setValue('Valid Name');
+    expect(component.validProductName).toBeFalse();
+  });
+
+  it('should validate description as invalid when empty and touched', () => {
+    const descriptionControl = component.productForm.get('description');
+    descriptionControl?.markAsTouched();
+    expect(component.validProductDescription).toBeTrue();
+
+    descriptionControl?.setValue('Valid Description');
+    expect(component.validProductDescription).toBeFalse();
+  });
+
+  it('should validate price as invalid when empty or below zero and touched', () => {
+    const priceControl = component.productForm.get('price');
+    priceControl?.markAsTouched();
+    expect(component.validProductPrice).toBeTrue();
+
+    priceControl?.setValue(-5);
+    expect(component.validProductPrice).toBeTrue();
+
+    priceControl?.setValue(100);
+    expect(component.validProductPrice).toBeFalse();
+  });
+
+  it('should validate category as invalid when empty and touched', () => {
+    const categoryControl = component.productForm.get('category');
+    categoryControl?.markAsTouched();
+    expect(component.validProductCategory).toBeTrue();
+
+    categoryControl?.setValue('Valid Category');
+    expect(component.validProductCategory).toBeFalse();
   });
 });
