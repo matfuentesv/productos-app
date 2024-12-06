@@ -107,7 +107,7 @@ export class AdminComponent implements OnInit, AfterViewInit, AfterViewChecked {
     private fb: FormBuilder,
     private userService: DataService,
     private cdr: ChangeDetectorRef,
-    private ngZone: NgZone,
+    public ngZone: NgZone,
     private dialog: MatDialog,
     private snackBar: MatSnackBar
   ) {
@@ -186,7 +186,7 @@ export class AdminComponent implements OnInit, AfterViewInit, AfterViewChecked {
   }
 
 
-  private loadData() {
+  loadData() {
     this.loading = true;
     this.userService.getUsers().subscribe(users => {
       this.user = users;

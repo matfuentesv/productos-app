@@ -1,129 +1,85 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {HttpClientModule} from '@angular/common/http';
 import {MatPaginatorModule} from '@angular/material/paginator';
-import {MatTableDataSource, MatTableModule} from '@angular/material/table';
+import {MatTableModule} from '@angular/material/table';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {FormControl, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
+import {ReactiveFormsModule} from '@angular/forms';
+import {MatDialog} from '@angular/material/dialog';
 import {AdminComponent} from './admin.component';
-import {Subject} from 'rxjs';
 
-describe('AdminComponent - Paginator Initialization and Form Validation', () => {
+import {of} from 'rxjs';
+import {UserModalComponent} from '../../../shared/components/user-modal/user-modal.component';
+import {EditUserModalComponent} from '../../../shared/components/edit-user-modal/edit-user-modal.component';
+
+describe('AdminComponent - Dialogs and Methods', () => {
   let component: AdminComponent;
   let fixture: ComponentFixture<AdminComponent>;
+  let dialogSpy: jasmine.SpyObj<MatDialog>;
 
   beforeEach(async () => {
+    dialogSpy = jasmine.createSpyObj('MatDialog', ['open']);
+
     await TestBed.configureTestingModule({
       imports: [
         HttpClientModule,
         MatPaginatorModule,
         MatTableModule,
-        BrowserAnimationsModule, // Agregado para evitar errores NG05105
+        BrowserAnimationsModule,
+        AdminComponent,
         ReactiveFormsModule,
-        AdminComponent
+        HttpClientModule
       ],
+      providers: [
+        { provide: MatDialog, useValue: dialogSpy }
+      ]
     }).compileComponents();
 
     fixture = TestBed.createComponent(AdminComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-
-    // Inicializar el formulario
-    component.productForm = new FormGroup({
-      productName: new FormControl('', [Validators.required]),
-      description: new FormControl('', [Validators.required]),
-      price: new FormControl('', [Validators.required, Validators.min(0)]),
-      category: new FormControl('', [Validators.required]),
-    });
   });
 
-  it('should validate productName as invalid when empty and touched', () => {
-    const productNameControl = component.productForm.get('productName');
-    productNameControl?.markAsTouched();
-    expect(component.validProductName).toBeTrue();
+  it('should open the UserModalComponent and reload data when rsp is 1', () => {
+    const dialogRefSpy = {
+      afterClosed: () => of(1) // Simular que el diálogo devuelve 1
+    };
+    dialogSpy.open.and.returnValue(dialogRefSpy as any);
 
-    productNameControl?.setValue('Valid Name');
-    expect(component.validProductName).toBeFalse();
+    spyOn(component.ngZone, 'run').and.callFake((fn) => fn());
+    spyOn(component, 'loadData');
+
+    component.openModal();
+
+    expect(dialogSpy.open).toHaveBeenCalledWith(UserModalComponent, { data: { users: component.user }, disableClose: true });
+    expect(component.ngZone.run).toHaveBeenCalled();
+    expect(component.loadData).toHaveBeenCalled();
   });
 
-  it('should validate description as invalid when empty and touched', () => {
-    const descriptionControl = component.productForm.get('description');
-    descriptionControl?.markAsTouched();
-    expect(component.validProductDescription).toBeTrue();
+  it('should open the EditUserModalComponent and reload data when result is 1', () => {
+    const userMock = {
+      id: 1,
+      firstName: 'Test',
+      lastName: 'User',
+      rut: '12345678-9',
+      email: 'test@example.com',
+      phone: '123456789',
+      address: 'Test Address',
+      password: 'password',
+      roles: ['admin']
+    };
 
-    descriptionControl?.setValue('Valid Description');
-    expect(component.validProductDescription).toBeFalse();
-  });
+    const dialogRefSpy = {
+      afterClosed: () => of(1) // Simular que el diálogo devuelve 1
+    };
+    dialogSpy.open.and.returnValue(dialogRefSpy as any);
 
-  it('should validate price as invalid when empty or below zero and touched', () => {
-    const priceControl = component.productForm.get('price');
-    priceControl?.markAsTouched();
-    expect(component.validProductPrice).toBeTrue();
+    spyOn(component.ngZone, 'run').and.callFake((fn) => fn());
+    spyOn(component, 'loadData');
 
-    priceControl?.setValue(-5);
-    expect(component.validProductPrice).toBeTrue();
+    component.editElement(userMock);
 
-    priceControl?.setValue(100);
-    expect(component.validProductPrice).toBeFalse();
-  });
-
-  it('should validate category as invalid when empty and touched', () => {
-    const categoryControl = component.productForm.get('category');
-    categoryControl?.markAsTouched();
-    expect(component.validProductCategory).toBeTrue();
-
-    categoryControl?.setValue('Valid Category');
-    expect(component.validProductCategory).toBeFalse();
-  });
-
-  it('should initialize userPaginator correctly when dataSource.paginator is null', () => {
-    const paginatorMock = jasmine.createSpyObj('MatPaginator', [], {
-      page: new Subject<void>() // Observable simulado
-    });
-    component.dataSource = { paginator: null } as MatTableDataSource<any>;
-    component.userPaginator = paginatorMock;
-
-    component.initializePaginator();
-
-    expect(component.dataSource.paginator).toBe(component.userPaginator);
-  });
-
-  it('should not reinitialize userPaginator if already set', () => {
-    const mockPaginator = jasmine.createSpyObj('MatPaginator', [], {
-      page: new Subject<void>()
-    });
-    component.dataSource = { paginator: mockPaginator } as MatTableDataSource<any>;
-    component.userPaginator = jasmine.createSpyObj('MatPaginator', [], {
-      page: new Subject<void>()
-    });
-
-    component.initializePaginator();
-
-    expect(component.dataSource.paginator).toBe(mockPaginator);
-  });
-
-  it('should initialize productPaginator correctly when productDataSource.paginator is null', () => {
-    const paginatorMock = jasmine.createSpyObj('MatPaginator', [], {
-      page: new Subject<void>() // Observable simulado
-    });
-    component.productDataSource = { paginator: null } as MatTableDataSource<any>;
-    component.productPaginator = paginatorMock;
-
-    component.initializePaginator();
-
-    expect(component.productDataSource.paginator).toBe(component.productPaginator);
-  });
-
-  it('should not reinitialize productPaginator if already set', () => {
-    const mockPaginator = jasmine.createSpyObj('MatPaginator', [], {
-      page: new Subject<void>()
-    });
-    component.productDataSource = { paginator: mockPaginator } as MatTableDataSource<any>;
-    component.productPaginator = jasmine.createSpyObj('MatPaginator', [], {
-      page: new Subject<void>()
-    });
-
-    component.initializePaginator();
-
-    expect(component.productDataSource.paginator).toBe(mockPaginator);
+    expect(dialogSpy.open).toHaveBeenCalledWith(EditUserModalComponent, { data: { users: component.user, user: userMock }, disableClose: true });
+    expect(component.ngZone.run).toHaveBeenCalled();
+    expect(component.loadData).toHaveBeenCalled();
   });
 });
