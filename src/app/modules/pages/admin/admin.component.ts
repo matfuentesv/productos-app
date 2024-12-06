@@ -1,6 +1,6 @@
 import {AfterViewChecked, AfterViewInit, ChangeDetectorRef, Component, NgZone, OnInit, ViewChild} from '@angular/core';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
-import {NgClass, NgIf} from "@angular/common";
+import {NgIf} from "@angular/common";
 import {DataService} from "../../../core/services/data/data.service";
 import {
   MatCell,
@@ -58,7 +58,6 @@ interface ProductResponse {
     MatHeaderRowDef,
     MatPaginator,
     MatSpinner,
-    NgClass,
     Ng2Rut2,
     MatIconButton,
     MatIcon,

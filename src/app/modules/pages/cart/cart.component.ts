@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {CurrencyPipe, NgForOf, NgIf} from "@angular/common";
+import {NgForOf, NgIf} from "@angular/common";
 import {FormsModule} from '@angular/forms';
 import {CustomCurrencyPipe} from '../../../shared/pipes/customCurrency';
 import {Products} from '../../../shared/models/products';
@@ -11,7 +11,6 @@ import {CartService} from '../../../core/services/cart/cart.service';
   standalone: true,
   imports: [
     NgForOf,
-    CurrencyPipe,
     FormsModule,
     NgIf,
     CustomCurrencyPipe

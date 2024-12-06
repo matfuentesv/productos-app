@@ -1,9 +1,9 @@
-import { Component, Input } from '@angular/core';
-import {CurrencyPipe, NgClass, NgForOf, NgIf} from "@angular/common";
-import { Products } from "../../models/products";
-import { CartService } from "../../../core/services/cart/cart.service";
-import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from "@angular/material/snack-bar";
-import { CustomCurrencyPipe } from "../../pipes/customCurrency";
+import {Component, Input} from '@angular/core';
+import {NgClass, NgForOf, NgIf} from "@angular/common";
+import {Products} from "../../models/products";
+import {CartService} from "../../../core/services/cart/cart.service";
+import {MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition} from "@angular/material/snack-bar";
+import {CustomCurrencyPipe} from "../../pipes/customCurrency";
 import {MatProgressSpinner} from "@angular/material/progress-spinner";
 
 
@@ -11,7 +11,6 @@ import {MatProgressSpinner} from "@angular/material/progress-spinner";
   selector: 'app-grid',
   standalone: true,
   imports: [
-    CurrencyPipe,
     NgForOf,
     NgClass,
     CustomCurrencyPipe,

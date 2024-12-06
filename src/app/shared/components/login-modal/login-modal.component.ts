@@ -1,16 +1,15 @@
-import { Component } from '@angular/core';
-import { MatDialog } from "@angular/material/dialog";
-import { Router, RouterLink } from "@angular/router";
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from "@angular/forms";
-import { AuthService } from "../../../core/services/auth/auth.service";
-import { NgIf } from "@angular/common";
+import {Component} from '@angular/core';
+import {MatDialog} from "@angular/material/dialog";
+import {Router} from "@angular/router";
+import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
+import {AuthService} from "../../../core/services/auth/auth.service";
+import {NgIf} from "@angular/common";
 
 
 @Component({
   selector: 'app-login-modal',
   standalone: true,
   imports: [
-    RouterLink,
     ReactiveFormsModule,
     NgIf
   ],
