@@ -4,7 +4,7 @@ import {MatSnackBar} from '@angular/material/snack-bar';
 import {NgClass, NgIf} from '@angular/common';
 import {Router} from '@angular/router';
 import {MatDialog} from '@angular/material/dialog';
-import {of, throwError} from 'rxjs';
+import {BehaviorSubject, of, throwError} from 'rxjs';
 import {RegisterComponent} from './register.component';
 import {AuthService} from '../../../core/services/auth/auth.service';
 import {DataService} from '../../../core/services/data/data.service';
@@ -21,7 +21,19 @@ describe('RegisterComponent', () => {
   let mockDialog: jasmine.SpyObj<MatDialog>;
 
   beforeEach(async () => {
-    mockAuthService = jasmine.createSpyObj('AuthService', ['getUser', 'loadUsers', 'isLoggedIn', 'userNameSubject', 'userRoleSubject']);
+    mockAuthService = jasmine.createSpyObj('AuthService', ['loadUsers', 'getUser']);
+    mockAuthService.isLoggedIn = jasmine.createSpyObj('BehaviorSubject<boolean>', ['next']);
+    mockAuthService.userNameSubject = jasmine.createSpyObj('BehaviorSubject<string | null>', ['next']);
+    mockAuthService.userRoleSubject = jasmine.createSpyObj('BehaviorSubject<string | null>', ['next']);
+
+    mockAuthService.isLoggedIn = new BehaviorSubject<boolean>(false);
+    mockAuthService.userNameSubject = new BehaviorSubject<string | null>(null);
+    mockAuthService.userRoleSubject = new BehaviorSubject<string | null>(null);
+
+    spyOn(mockAuthService.isLoggedIn, 'next').and.callThrough();
+    spyOn(mockAuthService.userNameSubject, 'next').and.callThrough();
+    spyOn(mockAuthService.userRoleSubject, 'next').and.callThrough();
+
     mockDataService = jasmine.createSpyObj('DataService', ['addUser', 'getUsers']);
     mockSnackBar = jasmine.createSpyObj('MatSnackBar', ['open']);
     mockRouter = jasmine.createSpyObj('Router', ['navigate']);
@@ -43,6 +55,7 @@ describe('RegisterComponent', () => {
       ]
     }).compileComponents();
   });
+
 
   beforeEach(() => {
     fixture = TestBed.createComponent(RegisterComponent);
@@ -128,16 +141,17 @@ describe('RegisterComponent', () => {
   }));
 
   it('should handle error on form submission', fakeAsync(() => {
-    const user: User = {
+    const user: any = {
       id: 1,
       firstName: 'Jane',
       lastName: 'Doe',
-      rut: '98765432-1',
+      rut: '19.033.397-3',
       email: 'jane.doe@example.com',
       phone: '0987654321',
       address: '456 Main St',
       password: 'Password2',
-      roles: ['admin']
+      promo:true,
+      //roles: ['admin']
     };
     mockAuthService.loadUsers.and.returnValue([user]);
     mockAuthService.getUser.and.returnValue(user);
@@ -152,6 +166,96 @@ describe('RegisterComponent', () => {
       address: '456 Main St',
       email: 'jane.doe@example.com',
       password: 'Password2',
+      promo: true,
+      //roles: ['admin']
+    });
+
+    component.onSubmit();
+    tick();
+
+    expect(mockDataService.addUser).toHaveBeenCalled();
+    expect(mockSnackBar.open).toHaveBeenCalledWith('Error en el registro o login', 'Cerrar', {
+      duration: 3000,
+      horizontalPosition: 'start',
+      verticalPosition: 'bottom'
+    });
+    expect(mockRouter.navigate).not.toHaveBeenCalled();
+  }));
+
+  it('should set isLoggedIn to true, emit userName, and navigate to /home', fakeAsync(() => {
+    const user: any = {
+      id: 1,
+      firstName: 'Updated Name',
+      lastName: 'Updated LastName',
+      rut: '19.033.397-3',
+      email: 'updated.email@example.com',
+      phone: '987654321',
+      address: '456 Avenue',
+      password: 'UpdatedPassword1',
+      promo: true
+    };
+
+    mockAuthService.loadUsers.and.returnValue([user]);
+    mockAuthService.getUser.and.returnValue(user);
+    mockDataService.addUser.and.returnValue(of({}));
+
+    component.ngOnInit();
+
+    component.registerForm.setValue({
+      firstName: 'Updated Name',
+      lastName: 'Updated LastName',
+      rut: '19.033.397-3',
+      email: 'updated.email@example.com',
+      phone: '987654321',
+      address: '456 Avenue',
+      password: 'UpdatedPassword1',
+      promo: true
+    });
+
+    component.onSubmit();
+    tick();
+
+    // Verificaciones
+    expect(mockAuthService.isLoggedIn.next).toHaveBeenCalledWith(true);
+    expect(mockAuthService.userNameSubject.next).toHaveBeenCalledWith(user.firstName);
+    expect(mockAuthService.userRoleSubject.next).toHaveBeenCalledWith('admin');
+    expect(mockRouter.navigate).toHaveBeenCalledWith(['/home']);
+    expect(mockSnackBar.open).toHaveBeenCalledWith('Usuario creado correctamente!', '', {
+      duration: 3000,
+      horizontalPosition: 'start',
+      verticalPosition: 'bottom',
+      panelClass: ['custom-snackbar']
+    });
+  }));
+
+  it('should handle error and display a SnackBar message', fakeAsync(() => {
+    const user: any = {
+      id: 2,
+      firstName: 'Updated Name',
+      lastName: 'Updated LastName',
+      rut: '19.033.397-3',
+      email: 'updated.email@example.com',
+      phone: '987654321',
+      address: '456 Avenue',
+      password: 'UpdatedPassword1',
+      roles: ['admin']
+    };
+
+    // Ajuste en el mock
+    mockAuthService.loadUsers.and.returnValue([user]); // Retorna un array directamente
+    mockAuthService.getUser.and.returnValue(user);
+    mockDataService.addUser.and.returnValue(throwError(() => 'Service error')); // Error simulado
+
+    component.ngOnInit();
+
+    component.registerForm.setValue({
+      firstName: user.firstName,
+      lastName: user.lastName,
+      rut: user.rut,
+      phone: user.phone,
+      address: user.address,
+      email: user.email,
+      password: user.password,
       promo: true
     });
 
@@ -166,4 +270,5 @@ describe('RegisterComponent', () => {
     });
     expect(mockRouter.navigate).not.toHaveBeenCalled();
   }));
+
 });
