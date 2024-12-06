@@ -1,12 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {
-  AbstractControl,
-  FormBuilder,
-  FormGroup,
-  ReactiveFormsModule,
-  ValidationErrors,
-  Validators
-} from "@angular/forms";
+import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
 
 import {MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition} from "@angular/material/snack-bar";
 import {NgClass, NgIf} from "@angular/common";
@@ -109,16 +102,6 @@ export class AccountComponent implements OnInit {
 
   get validPassword(){
     return this.accountForm.get('password')?.invalid && this.accountForm.get('password')?.touched;
-  }
-
-
-  passwordMatchValidator(control: AbstractControl): ValidationErrors | null {
-    const password = control.get('password')?.value;
-    const confirmPassword = control.get('confirmPassword')?.value;
-    if (password !== confirmPassword) {
-      return { passwordMismatch: true };
-    }
-    return null;
   }
 
 

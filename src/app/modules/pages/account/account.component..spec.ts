@@ -107,4 +107,39 @@ describe('AccountComponent', () => {
 
     expect(mockSnackBar.open).not.toHaveBeenCalled();
   });
+
+  it('should validate password as invalid if it does not meet requirements', () => {
+    const passwordControl = component.accountForm.controls['password'];
+
+    // Validación de longitud mínima
+    passwordControl.setValue('short');
+    expect(passwordControl.valid).toBeFalse();
+    expect(passwordControl.errors?.['minlength']).toBeDefined();
+    expect(passwordControl.errors?.['minlength']?.requiredLength).toBe(6);
+    expect(passwordControl.errors?.['minlength']?.actualLength).toBe(5);
+
+    // Validación de patrón (sin mayúsculas)
+    passwordControl.setValue('nouppercase1');
+    expect(passwordControl.valid).toBeFalse();
+    expect(passwordControl.errors?.['pattern']).toBeDefined();
+    expect(passwordControl.errors?.['pattern']?.requiredPattern).toBe('^(?=.*[A-Z])(?=.*\\d).{6,18}$');
+    expect(passwordControl.errors?.['pattern']?.actualValue).toBe('nouppercase1');
+
+    // Contraseña válida
+    passwordControl.setValue('ValidPassword1');
+    expect(passwordControl.valid).toBeTrue();
+    expect(passwordControl.errors).toBeNull();
+  });
+
+
+  it('should validate email as invalid if incorrect format', () => {
+    const emailControl = component.accountForm.controls['email'];
+
+    emailControl.setValue('invalidemail');
+    expect(emailControl.valid).toBeFalse();
+    expect(emailControl.errors?.['email']).toBeTrue();
+
+    emailControl.setValue('valid.email@example.com');
+    expect(emailControl.valid).toBeTrue();
+  });
 });
