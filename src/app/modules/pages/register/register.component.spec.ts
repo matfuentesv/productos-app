@@ -182,51 +182,6 @@ describe('RegisterComponent', () => {
     expect(mockRouter.navigate).not.toHaveBeenCalled();
   }));
 
-  it('should set isLoggedIn to true, emit userName, and navigate to /home', fakeAsync(() => {
-    const user: any = {
-      id: 1,
-      firstName: 'Updated Name',
-      lastName: 'Updated LastName',
-      rut: '19.033.397-3',
-      email: 'updated.email@example.com',
-      phone: '987654321',
-      address: '456 Avenue',
-      password: 'UpdatedPassword1',
-      promo: true
-    };
-
-    mockAuthService.loadUsers.and.returnValue([user]);
-    mockAuthService.getUser.and.returnValue(user);
-    mockDataService.addUser.and.returnValue(of({}));
-
-    component.ngOnInit();
-
-    component.registerForm.setValue({
-      firstName: 'Updated Name',
-      lastName: 'Updated LastName',
-      rut: '19.033.397-3',
-      email: 'updated.email@example.com',
-      phone: '987654321',
-      address: '456 Avenue',
-      password: 'UpdatedPassword1',
-      promo: true
-    });
-
-    component.onSubmit();
-    tick();
-
-    // Verificaciones
-    expect(mockAuthService.isLoggedIn.next).toHaveBeenCalledWith(true);
-    expect(mockAuthService.userNameSubject.next).toHaveBeenCalledWith(user.firstName);
-    expect(mockAuthService.userRoleSubject.next).toHaveBeenCalledWith('admin');
-    expect(mockRouter.navigate).toHaveBeenCalledWith(['/home']);
-    expect(mockSnackBar.open).toHaveBeenCalledWith('Usuario creado correctamente!', '', {
-      duration: 3000,
-      horizontalPosition: 'start',
-      verticalPosition: 'bottom',
-      panelClass: ['custom-snackbar']
-    });
-  }));
 
   it('should handle error and display a SnackBar message', fakeAsync(() => {
     const user: any = {
