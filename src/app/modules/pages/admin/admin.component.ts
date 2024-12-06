@@ -135,7 +135,7 @@ export class AdminComponent implements OnInit, AfterViewInit, AfterViewChecked {
     this.initializePaginator();
   }
 
-  private initializePaginator() {
+  initializePaginator() {
     if (this.userPaginator && !this.dataSource.paginator) {
       this.ngZone.runOutsideAngular(() => {
         this.dataSource.paginator = this.userPaginator;
