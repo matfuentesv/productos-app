@@ -224,19 +224,7 @@ export class AdminComponent implements OnInit, AfterViewInit, AfterViewChecked {
     this.currentSection = section;
   }
 
-  onSubmitProduct(): void {
-    if (this.productForm.valid) {
-      console.log(this.productForm.value);
-      this.snackBar.open('Producto agregado con éxito!', '', {
-        horizontalPosition: this.horizontalPosition,
-        verticalPosition: this.verticalPosition,
-        duration: 3000,
-        panelClass: ['custom-snackbar']
-      });
-    } else {
-      this.productForm.markAllAsTouched();
-    }
-  }
+
 
   get validProductName() {
     return this.productForm.get('productName')?.invalid && this.productForm.get('productName')?.touched;
