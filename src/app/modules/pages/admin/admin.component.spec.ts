@@ -156,4 +156,25 @@ describe('AdminComponent - Dialogs and Methods', () => {
     expect(component.productDataSource.paginator).toBe(productPaginatorMock);
     expect(component.setupPagination).toHaveBeenCalledWith(productPaginatorMock, 'products');
   });
+
+  it('should update currentSection when showSection is called', () => {
+    const event = new Event('click');
+    spyOn(event, 'preventDefault');
+
+    component.showSection(event, 'profile');
+
+    expect(event.preventDefault).toHaveBeenCalled();
+    expect(component.currentSection).toBe('profile');
+  });
+
+  it('should update currentSection to another section when showSection is called', () => {
+    const event = new Event('click');
+    spyOn(event, 'preventDefault');
+
+    component.showSection(event, 'settings');
+
+    expect(event.preventDefault).toHaveBeenCalled();
+    expect(component.currentSection).toBe('settings');
+  });
+
 });
