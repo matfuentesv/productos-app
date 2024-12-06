@@ -151,7 +151,7 @@ export class AdminComponent implements OnInit, AfterViewInit, AfterViewChecked {
     }
   }
 
-  private setupPagination(paginator: MatPaginator, section: string) {
+  setupPagination(paginator: MatPaginator, section: string) {
     merge(paginator.page)
       .pipe(
         startWith({}),

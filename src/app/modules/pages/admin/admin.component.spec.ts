@@ -1,13 +1,13 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {HttpClientModule} from '@angular/common/http';
 import {MatPaginatorModule} from '@angular/material/paginator';
-import {MatTableModule} from '@angular/material/table';
+import {MatTableDataSource, MatTableModule} from '@angular/material/table';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {FormControl, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {MatDialog} from '@angular/material/dialog';
 import {AdminComponent} from './admin.component';
 
-import {of} from 'rxjs';
+import {of, Subject} from 'rxjs';
 import {UserModalComponent} from '../../../shared/components/user-modal/user-modal.component';
 import {EditUserModalComponent} from '../../../shared/components/edit-user-modal/edit-user-modal.component';
 
@@ -129,5 +129,31 @@ describe('AdminComponent - Dialogs and Methods', () => {
 
     categoryControl?.setValue('Valid Category');
     expect(component.validProductCategory).toBeFalse();
+  });
+
+  it('should set userPaginator and call setupPagination when dataSource.paginator is null', () => {
+    component.dataSource = { paginator: null } as MatTableDataSource<any>;
+    const userPaginatorMock = jasmine.createSpyObj('MatPaginator', [], { page: new Subject<void>() });
+    component.userPaginator = userPaginatorMock;
+
+    spyOn(component, 'setupPagination');
+
+    component.initializePaginator();
+
+    expect(component.dataSource.paginator).toBe(userPaginatorMock);
+    expect(component.setupPagination).toHaveBeenCalledWith(userPaginatorMock, 'users');
+  });
+
+  it('should set productPaginator and call setupPagination when productDataSource.paginator is null', () => {
+    component.productDataSource = { paginator: null } as MatTableDataSource<any>;
+    const productPaginatorMock = jasmine.createSpyObj('MatPaginator', [], { page: new Subject<void>() });
+    component.productPaginator = productPaginatorMock;
+
+    spyOn(component, 'setupPagination');
+
+    component.initializePaginator();
+
+    expect(component.productDataSource.paginator).toBe(productPaginatorMock);
+    expect(component.setupPagination).toHaveBeenCalledWith(productPaginatorMock, 'products');
   });
 });
