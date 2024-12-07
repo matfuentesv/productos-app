@@ -42,12 +42,12 @@ export class DataService {
   }
 
 
-  createUser(user: User): Observable<User> {
-    return this.http.put<User>(endpoints.createUser.path, user,);
+  createUser(user: any): Observable<any> {
+    return this.http.post<any>(endpoints.createUser.path, user,);
   }
 
   updateUser(user: User): Observable<User> {
-    return this.http.put<User>(endpoints.updateUser.path, user,);
+    return this.http.put<any>(endpoints.updateUser.path, user,);
   }
 
 

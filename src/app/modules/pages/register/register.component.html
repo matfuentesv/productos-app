@@ -5,14 +5,14 @@
       <form [formGroup]="registerForm"  (ngSubmit)="onSubmit()" id="registerForm">
         <div class="form-group">
           <label for="firstName">Nombre</label>
-          <input type="text" [ngClass]="{'input-error':validFirstName}" id="firstName" class="form-control" formControlName="firstName" required>
+          <input (keypress)='validateCharacters($event)' type="text" [ngClass]="{'input-error':validFirstName}" id="firstName" class="form-control" formControlName="firstName" required>
           <div *ngIf="registerForm.get('firstName')?.invalid && registerForm.get('firstName')?.touched">
             <small class="error" *ngIf="registerForm.get('firstName')?.errors?.['required']">El nombre es obligatorio.</small>
           </div>
         </div>
         <div class="form-group">
           <label for="lastName">Apellido</label>
-          <input type="text" [ngClass]="{'input-error':validLastName}" id="lastName" class="form-control" formControlName="lastName" required>
+          <input (keypress)='validateCharacters($event)' type="text" [ngClass]="{'input-error':validLastName}" id="lastName" class="form-control" formControlName="lastName" required>
           <div *ngIf="registerForm.get('lastName')?.invalid && registerForm.get('lastName')?.touched">
             <small class="error" *ngIf="registerForm.get('lastName')?.errors?.['required']">El apellido son obligatorios.</small>
           </div>
@@ -27,7 +27,7 @@
         </div>
         <div class="form-group">
           <label for="phone">Celular</label>
-            <input type="text" [ngClass]="{'input-error':validPhone}" id="phone" class="form-control" formControlName="phone" required>
+            <input (keypress)='validateNumbers($event)' type="text" [ngClass]="{'input-error':validPhone}" id="phone" class="form-control" formControlName="phone" required>
             <div *ngIf="registerForm.get('phone')?.invalid && registerForm.get('phone')?.touched">
               <small class="error" *ngIf="registerForm.get('phone')?.errors?.['required']">El celular es obligatorio.</small>
               <small class="error" *ngIf="registerForm.get('phone')?.errors?.['phone']">El celular no es válido.</small>

@@ -4,7 +4,7 @@
     <div class="row">
       <div class="col-md-6">
         <label for="firstName">Nombre</label>
-        <input  (keypress)='validateCharacters($event)' type="text" [ngClass]="{'input-error':validFirstName}" id="firstName" class="form-control" formControlName="firstName" required>
+        <input (keypress)='validateCharacters($event)' type="text" [ngClass]="{'input-error':validFirstName}" id="firstName" class="form-control" formControlName="firstName" required>
         <div *ngIf="accountForm.get('firstName')?.invalid && accountForm.get('firstName')?.touched">
           <small class="error" *ngIf="accountForm.get('firstName')?.errors?.['required']">El nombre es obligatorio.</small>
         </div>

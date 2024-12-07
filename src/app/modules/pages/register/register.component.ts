@@ -15,6 +15,7 @@ import {User} from "../../../shared/models/user";
 import {NgClass, NgIf} from "@angular/common";
 import {MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition} from "@angular/material/snack-bar";
 import {DataService} from "../../../core/services/data/data.service";
+import {RutValidatorDirective} from '../../../shared/directives/ng2-rut/ng2-rut.module';
 
 
 @Component({
@@ -56,15 +57,15 @@ export class RegisterComponent implements OnInit {
     this.registerForm = this.fb.group({
       firstName: ['', Validators.required],
       lastName: ['', Validators.required],
-      rut: ['', Validators.required],
+      rut: ['', [Validators.required, RutValidatorDirective.validate]],
+      email: ['', [Validators.required, Validators.email]],
       phone: ['', Validators.required],
       address: ['', Validators.required],
-      email: ['', [Validators.required, Validators.email]],
       password: ['', [
         Validators.required,
-        Validators.pattern('^(?=.*[A-Z])(?=.*\\d).{6,18}$'),
         Validators.minLength(6),
-        Validators.maxLength(18)
+        Validators.maxLength(18),
+        Validators.pattern('^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{6,18}$')
       ]],
       promo: [false, [this.requiredCheckbox]]
     });
@@ -111,42 +112,42 @@ export class RegisterComponent implements OnInit {
       console.log(this.registerForm.value);
 
       const newUser = {
-        id: this.users.length > 0 ? Math.max(...this.users.map((p: any) => p.id)) + 1 : 1,
+        rut: this.registerForm.get('rut')?.value,
         firstName: this.registerForm.get('firstName')?.value,
         lastName: this.registerForm.get('lastName')?.value,
-        rut: this.registerForm.get('rut')?.value,
         email: this.registerForm.get('email')?.value,
         phone: this.registerForm.get('phone')?.value,
         address: this.registerForm.get('address')?.value,
         password: this.registerForm.get('password')?.value,
         rol: {
-          id: 1,
-          name: 'Admin',
-          description: ''
+          id: 2
         }
       };
 
       try {
-        this.users.push(newUser);
-        await this.dataService.addUser(this.users).toPromise();
 
+        this.dataService.createUser(newUser).subscribe(rsp=>{
+             if(rsp){
+                 this.authService.isLoggedIn.next(true);
+                 this.authService.userNameSubject.next(rsp?.body.firstName);
+                 this.authService.userRoleSubject.next(rsp.body.rol.name ==='Admin'? 'admin' : 'customer');
+                 this.authService.currentUser = rsp.body;
+                 this.snackBar.open('Usuario creado correctamente!', '', {
+                   horizontalPosition: this.horizontalPosition,
+                   verticalPosition: this.verticalPosition,
+                   duration: 3000,
+                   panelClass: ['custom-snackbar']
+                 });
+                 this.router.navigate(['/home']);
+             }
+        });
 
-        await this.loadUsers();
-
-        const user = this.users.find(u => u.email === newUser.email && u.password === newUser.password);
-        if (user) {
-          this.authService.isLoggedIn.next(true);
-          this.authService.userNameSubject.next(user.firstName);
-          this.authService.userRoleSubject.next(user.rol.name ==='Admin'? 'admin' : 'customer');
-          this.authService.currentUser = user;
-          this.snackBar.open('Usuario creado correctamente!', '', {
-            horizontalPosition: this.horizontalPosition,
-            verticalPosition: this.verticalPosition,
-            duration: 3000,
-            panelClass: ['custom-snackbar']
-          });
-          this.router.navigate(['/home']);
-        }
+        // await this.loadUsers();
+        //
+        // // this.users.find(u => u.email === newUser.email && u.password === newUser.password).
+        // // if (user) {
+        //
+        // // }
       } catch (error) {
         this.snackBar.open('Error en el registro o login', 'Cerrar', {
           duration: 3000,
@@ -173,5 +174,17 @@ export class RegisterComponent implements OnInit {
 
   requiredCheckbox(control: AbstractControl): ValidationErrors | null {
     return control.value ? null : { required: true };
+  }
+
+  validateCharacters(event: { charCode: number; }): boolean {
+    return (
+      (event.charCode >= 65 && event.charCode <= 90) || // Letras mayúsculas (A-Z)
+      (event.charCode >= 97 && event.charCode <= 122) || // Letras minúsculas (a-z)
+      event.charCode === 32 // Espacios
+    );
+  }
+
+  validateNumbers(event: { charCode: number; }){
+    return (event.charCode >= 48 && event.charCode <= 57) || event.charCode === 107;
   }
 }

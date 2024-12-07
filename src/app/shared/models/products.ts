@@ -4,7 +4,7 @@ export interface Products {
   discount: number;
   description: string;
   image: string;
-  category: string;
+  category?: string;
   originalPrice: number;
   rating: number;
   reviews: number;

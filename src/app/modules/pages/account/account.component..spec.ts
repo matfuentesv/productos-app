@@ -126,7 +126,7 @@ describe('AccountComponent', () => {
     passwordControl.setValue('nouppercase1');
     expect(passwordControl.valid).toBeFalse();
     expect(passwordControl.errors?.['pattern']).toBeDefined();
-    expect(passwordControl.errors?.['pattern']?.requiredPattern).toBe('^(?=.*[A-Z])(?=.*\\d).{6,18}$');
+    expect(passwordControl.errors?.['pattern']?.requiredPattern).toBe('^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{6,18}$');
     expect(passwordControl.errors?.['pattern']?.actualValue).toBe('nouppercase1');
 
     // Contraseña válida
