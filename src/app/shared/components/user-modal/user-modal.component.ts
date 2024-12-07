@@ -96,7 +96,7 @@ export class UserModalComponent implements OnInit {
         phone: this.userForm.get('phone')?.value,
         address: this.userForm.get('address')?.value,
         password: this.userForm.get('password')?.value,
-        roles: [this.userForm.get('roles')?.value]
+        rol: this.userForm.get('roles')?.value
       };
       this.user.push(newUser);
       this.dataService.addUser(this.user).subscribe(rsp => {

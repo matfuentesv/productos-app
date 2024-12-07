@@ -7,5 +7,11 @@ export interface User {
   phone: string;
   address: string;
   password: string;
-  roles: string[];
+  rol:Rol;
+}
+
+export interface Rol{
+  id: number;
+  name: string;
+  description: string;
 }

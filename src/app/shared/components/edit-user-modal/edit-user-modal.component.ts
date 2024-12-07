@@ -69,7 +69,7 @@ export class EditUserModalComponent  implements OnInit{
         Validators.minLength(6),
         Validators.maxLength(18)
       ]],
-      roles: [this.objectUser.roles[0], Validators.required]
+      roles: [this.objectUser.rol, Validators.required]
     });
   }
 
@@ -92,7 +92,7 @@ export class EditUserModalComponent  implements OnInit{
         this.users[index].phone = this.userForm.get('phone')?.value;
         this.users[index].address = this.userForm.get('address')?.value;
         this.users[index].password = this.userForm.get('password')?.value;
-        this.users[index].roles = [this.userForm.get('roles')?.value];
+        this.users[index].rol = this.userForm.get('roles')?.value;
 
         this.dataService.addUser(this.users).subscribe(rsp => {
           this.snackBar.open('Usuario actualizado correctamente!', '', {
@@ -105,7 +105,7 @@ export class EditUserModalComponent  implements OnInit{
           if(this.loggedUser?.id === this.users[index].id){
             this.authService.isLoggedIn.next(true);
             this.authService.userNameSubject.next(this.users[index].firstName);
-            this.authService.userRoleSubject.next(this.users[index].roles.includes('admin') ? 'admin' : 'customer');
+            this.authService.userRoleSubject.next(this.users[index].rol.name ==='Admmin' ? 'admin' : 'customer');
             this.authService.currentUser = this.users[index];
           }
 

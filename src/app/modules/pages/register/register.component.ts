@@ -110,7 +110,7 @@ export class RegisterComponent implements OnInit {
     if (this.registerForm.valid) {
       console.log(this.registerForm.value);
 
-      const newUser: User = {
+      const newUser = {
         id: this.users.length > 0 ? Math.max(...this.users.map((p: any) => p.id)) + 1 : 1,
         firstName: this.registerForm.get('firstName')?.value,
         lastName: this.registerForm.get('lastName')?.value,
@@ -119,7 +119,11 @@ export class RegisterComponent implements OnInit {
         phone: this.registerForm.get('phone')?.value,
         address: this.registerForm.get('address')?.value,
         password: this.registerForm.get('password')?.value,
-        roles: ["admin"]
+        rol: {
+          id: 1,
+          name: 'Admin',
+          description: ''
+        }
       };
 
       try {
@@ -133,7 +137,7 @@ export class RegisterComponent implements OnInit {
         if (user) {
           this.authService.isLoggedIn.next(true);
           this.authService.userNameSubject.next(user.firstName);
-          this.authService.userRoleSubject.next(user.roles.includes('admin') ? 'admin' : 'customer');
+          this.authService.userRoleSubject.next(user.rol.name ==='Admin'? 'admin' : 'customer');
           this.authService.currentUser = user;
           this.snackBar.open('Usuario creado correctamente!', '', {
             horizontalPosition: this.horizontalPosition,

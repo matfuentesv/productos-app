@@ -1,8 +1,8 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { ProductsResponse } from "../../../shared/models/products";
-import { User } from "../../../shared/models/user";
+import {Observable} from 'rxjs';
+import {ProductsResponse} from "../../../shared/models/products";
+import {User} from "../../../shared/models/user";
 import {endpoints} from '../../../enviroments/endpoints';
 
 
@@ -25,16 +25,36 @@ export class DataService {
 
 
   getProducts(): Observable<ProductsResponse> {
-    return this.http.get<ProductsResponse>(endpoints.products.path);
+    return this.http.get<ProductsResponse>(endpoints.findAllProduct.path);
   }
 
 
+  login(email: string, password: string): Observable<any> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+        'email': email,
+        'password': password
+      })
+    };
+
+    return this.http.post(endpoints.login.path, {}, httpOptions);
+  }
+
+  findUserByEmail(email: string): Observable<User> {
+
+
+    return this.http.get<User>(endpoints.findUserByEmail.path+email, {}, );
+  }
+
+
+
   getUsers(): Observable<User[]> {
-    return this.http.get<User[]>(endpoints.users.path);
+    return this.http.get<User[]>(endpoints.findAllUsers.path);
   }
 
   addUser(user:User[]) {
     console.log(user);
-    return  this.http.post(endpoints.users.path,user,this.httpOptions);
+    return  this.http.post(endpoints.findAllUsers.path,user,this.httpOptions);
   }
 }

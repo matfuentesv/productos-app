@@ -1,12 +1,23 @@
 export const endpoints = {
-  users: {
+  findAllUsers: {
     name: 'Users',
     description: 'Obtiene Lista de usuarios',
-    path: 'https://firebasestorage.googleapis.com/v0/b/product-app-8944e.firebasestorage.app/o/users.json?alt=media&token=234aa711-3461-47c2-b7cd-6f6477230fd5'
+    path: 'http://localhost:8081/api/findAllUsers'
   },
-  products: {
+  findAllProduct: {
     name: 'Products',
     description: 'Obtiene lista de productos',
-    path: 'https://firebasestorage.googleapis.com/v0/b/product-app-8944e.firebasestorage.app/o/products.json?alt=media&token=cd57abbf-89c7-456f-beaa-2d4c7ced3d07'
+    path: 'http://localhost:8080/api/findAllProduct'
+  },
+  login: {
+    name: 'Login User',
+    description: 'Realiza login',
+    path: 'http://localhost:8081/api/login'
+  },
+  findUserByEmail: {
+    name: 'Find user by email',
+    description: 'Obtiene usuario po email',
+    path: 'http://localhost:8081/api/findUser/'
   }
+
 }

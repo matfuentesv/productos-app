@@ -1,8 +1,8 @@
-import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
-import { User } from "../../../shared/models/user";
-import { DataService } from "../data/data.service";
-import { BehaviorSubject } from "rxjs";
+import {Injectable} from '@angular/core';
+import {Router} from '@angular/router';
+import {User} from "../../../shared/models/user";
+import {DataService} from "../data/data.service";
+import {BehaviorSubject} from "rxjs";
 
 
 @Injectable({
@@ -41,7 +41,7 @@ export class AuthService {
     if (user) {
       this.isLoggedIn.next(true);
       this.userNameSubject.next(user.firstName);
-      this.userRoleSubject.next(user.roles.includes('admin') ? 'admin' : 'customer');
+      this.userRoleSubject.next(user.rol.name === 'Admin'? 'admin' : 'customer');
       this.currentUser = user;
       return true;
     } else {
