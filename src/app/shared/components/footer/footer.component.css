@@ -1,0 +1,46 @@
+/* Configuración base para ocupar toda la pantalla */
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* El contenedor principal ocupa toda la altura */
+app-root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* Altura mínima igual a la pantalla */
+}
+
+/* Contenido dinámico que se expande */
+.content {
+  flex: 1; /* Este ocupa el espacio restante */
+  display: flex;
+  flex-direction: column;
+}
+
+/* Footer fijo al final */
+footer {
+  flex-shrink: 0; /* Evita que el footer se reduzca */
+  background-color: #007bff; /* Ajusta según el diseño */
+  color: white;
+  text-align: center;
+  padding: 20px;
+}
+
+/* Media Queries para resoluciones específicas */
+@media (max-width: 1024px) {
+  footer {
+    padding: 15px; /* Ajuste de padding */
+    font-size: 14px; /* Ajuste de texto */
+  }
+}
+
+@media (max-width: 768px) {
+  footer {
+    padding: 10px;
+    font-size: 12px; /* Tamaño más pequeño */
+  }
+}

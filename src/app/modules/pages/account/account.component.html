@@ -4,14 +4,14 @@
     <div class="row">
       <div class="col-md-6">
         <label for="firstName">Nombre</label>
-        <input type="text" [ngClass]="{'input-error':validFirstName}" id="firstName" class="form-control" formControlName="firstName" required>
+        <input  (keypress)='validateCharacters($event)' type="text" [ngClass]="{'input-error':validFirstName}" id="firstName" class="form-control" formControlName="firstName" required>
         <div *ngIf="accountForm.get('firstName')?.invalid && accountForm.get('firstName')?.touched">
           <small class="error" *ngIf="accountForm.get('firstName')?.errors?.['required']">El nombre es obligatorio.</small>
         </div>
       </div>
       <div class="col-md-6">
         <label for="lastName">Apellido</label>
-        <input type="text" [ngClass]="{'input-error':validLastName}" id="lastName" class="form-control" formControlName="lastName" required>
+        <input (keypress)='validateCharacters($event)' type="text" [ngClass]="{'input-error':validLastName}" id="lastName" class="form-control" formControlName="lastName" required>
         <div *ngIf="accountForm.get('lastName')?.invalid && accountForm.get('lastName')?.touched">
           <small class="error" *ngIf="accountForm.get('lastName')?.errors?.['required']">El apellido son obligatorios.</small>
         </div>
@@ -77,15 +77,23 @@
             <label >Contraseña</label>
             <input type="password" [ngClass]="{'input-error':validPassword}" id="password" class="form-control" formControlName="password" required>
             <div *ngIf="accountForm.get('password')?.invalid && accountForm.get('password')?.touched">
-              <small class="error" *ngIf="accountForm.get('password')?.errors?.['required']">La contraseña es obligatoria.</small>
-              <small class="error" *ngIf="accountForm.get('password')?.errors?.['pattern']">La contraseña debe tener al menos un número y una letra mayúscula.</small>
-              <small class="error" *ngIf="accountForm.get('password')?.errors?.['minlength']">La contraseña debe tener al menos 6 caracteres.</small>
-              <small class="error" *ngIf="accountForm.get('password')?.errors?.['maxlength']">La contraseña no puede exceder los 18 caracteres.</small>
+              <div *ngIf="accountForm.get('password')?.hasError('required')">
+               <small class="error"> La contraseña es obligatoria.</small>
+              </div>
+              <div *ngIf="accountForm.get('password')?.hasError('minlength')">
+                <small class="error">   La contraseña debe tener al menos 6 caracteres.</small>
+              </div>
+              <div *ngIf="accountForm.get('password')?.hasError('maxlength')">
+                <small class="error">La contraseña no puede exceder los 18 caracteres.</small>
+              </div>
+              <div *ngIf="accountForm.get('password')?.hasError('pattern')">
+                <small class="error"> La contraseña debe incluir al menos una letra, un número y un carácter especial</small>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-    <button type="submit" class="btn btn-primary w-100 text-center">Actualizar cuenta</button>
+    <button [disabled]="accountForm.invalid"  type="submit" class="btn btn-primary w-100 text-center">Actualizar cuenta</button>
   </form>
 </div>

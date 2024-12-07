@@ -8,6 +8,7 @@ import {User} from '../../../shared/models/user';
 import {AuthService} from '../../../core/services/auth/auth.service';
 import {DataService} from '../../../core/services/data/data.service';
 import {RutValidatorDirective} from '../../../shared/directives/ng2-rut/rut-validator.directive';
+import {RutDirective} from '../../../shared/directives/ng2-rut/rut.directive';
 
 @Component({
   selector: 'app-account',
@@ -15,7 +16,8 @@ import {RutValidatorDirective} from '../../../shared/directives/ng2-rut/rut-vali
   imports: [
     ReactiveFormsModule,
     NgIf,
-    NgClass
+    NgClass,
+    RutDirective
   ],
   templateUrl: './account.component.html',
   styleUrl: './account.component.css'
@@ -43,11 +45,12 @@ export class AccountComponent implements OnInit {
       address: ['', Validators.required],
       password: ['', [
         Validators.required,
-        Validators.pattern('^(?=.*[A-Z])(?=.*\\d).{6,18}$'),
         Validators.minLength(6),
-        Validators.maxLength(18)
+        Validators.maxLength(18),
+        Validators.pattern('^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{6,18}$')
       ]]
     });
+
   }
 
 
@@ -128,7 +131,6 @@ export class AccountComponent implements OnInit {
             this.users[index].phone = this.accountForm.get('phone')?.value;
             this.users[index].address = this.accountForm.get('address')?.value;
             this.users[index].password = this.accountForm.get('password')?.value;
-            //this.users[index].rol = this.objectUser?.rol ? "";
             this.dataService.updateUser(this.users[index]).subscribe(rsp => {
               this.authService.isLoggedIn.next(true);
               this.authService.userNameSubject.next(this.users[index].firstName);
@@ -150,6 +152,15 @@ export class AccountComponent implements OnInit {
   validateNumbers(event: { charCode: number; }){
     return (event.charCode >= 48 && event.charCode <= 57) || event.charCode === 107;
   }
+
+  validateCharacters(event: { charCode: number; }): boolean {
+    return (
+      (event.charCode >= 65 && event.charCode <= 90) || // Letras mayúsculas (A-Z)
+      (event.charCode >= 97 && event.charCode <= 122) || // Letras minúsculas (a-z)
+      event.charCode === 32 // Espacios
+    );
+  }
+
   async loadUsers() {
       await this.dataService.getUsers().toPromise();
   }
