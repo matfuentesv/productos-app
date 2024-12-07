@@ -18,6 +18,16 @@ export const endpoints = {
     name: 'Find user by email',
     description: 'Obtiene usuario po email',
     path: 'http://localhost:8081/api/findUser/'
+  },
+  createUser: {
+    name: 'Create User',
+    description: 'Crea usuarios',
+    path: 'http://localhost:8081/api/createUser'
+  },
+  updateUser: {
+    name: 'UpdateUser',
+    description: 'Actualiza información del usuario',
+    path: 'http://localhost:8081/api/updateUser'
   }
 
 }

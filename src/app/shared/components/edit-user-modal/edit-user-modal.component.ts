@@ -69,7 +69,7 @@ export class EditUserModalComponent  implements OnInit{
         Validators.minLength(6),
         Validators.maxLength(18)
       ]],
-      roles: [this.objectUser.rol, Validators.required]
+      rol: [this.objectUser.rol, Validators.required]
     });
   }
 

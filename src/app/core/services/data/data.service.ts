@@ -41,11 +41,15 @@ export class DataService {
     return this.http.post(endpoints.login.path, {}, httpOptions);
   }
 
-  findUserByEmail(email: string): Observable<User> {
 
-
-    return this.http.get<User>(endpoints.findUserByEmail.path+email, {}, );
+  createUser(user: User): Observable<User> {
+    return this.http.put<User>(endpoints.createUser.path, user,);
   }
+
+  updateUser(user: User): Observable<User> {
+    return this.http.put<User>(endpoints.updateUser.path, user,);
+  }
+
 
 
 

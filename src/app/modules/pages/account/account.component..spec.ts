@@ -64,7 +64,11 @@ describe('AccountComponent', () => {
       phone: '1234567890',
       address: '123 Main St',
       password: 'Password1',
-      roles: ['user']
+      rol: {
+        id: 2,
+        name: "Customer",
+        description: "Rol Customer"
+      }
     };
     mockAuthService.getUser.and.returnValue(user);
     mockAuthService.loadUsers.and.returnValue([user]);

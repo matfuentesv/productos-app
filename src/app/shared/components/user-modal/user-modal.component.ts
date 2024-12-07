@@ -72,7 +72,7 @@ export class UserModalComponent implements OnInit {
         Validators.minLength(6),
         Validators.maxLength(18)
       ]],
-      roles: ['', Validators.required]
+      rol: [null, Validators.required],
     });
   }
 
@@ -111,9 +111,13 @@ export class UserModalComponent implements OnInit {
     }
   }
 
-  validateNumbers(event: { charCode: number; }){
-    return (event.charCode >= 48 && event.charCode <= 57) || event.charCode === 107;
+  validateNumbers(event: KeyboardEvent): boolean {
+    const charCode = event.charCode || event.keyCode;
+    // Permitir números (0-9) y el carácter "+"
+    return (charCode >= 48 && charCode <= 57) || charCode === 43;
   }
+
+
 
 
 }

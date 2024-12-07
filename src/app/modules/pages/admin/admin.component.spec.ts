@@ -8,6 +8,7 @@ import {MatDialog} from '@angular/material/dialog';
 import {AdminComponent} from './admin.component';
 
 import {of, Subject} from 'rxjs';
+import {User} from '../../../shared/models/user';
 import {UserModalComponent} from '../../../shared/components/user-modal/user-modal.component';
 import {EditUserModalComponent} from '../../../shared/components/edit-user-modal/edit-user-modal.component';
 
@@ -59,13 +60,15 @@ describe('AdminComponent - Dialogs and Methods', () => {
 
     component.openModal();
 
-    expect(dialogSpy.open).toHaveBeenCalledWith(UserModalComponent, { data: { users: component.user }, disableClose: true });
+    expect(dialogSpy.open).toHaveBeenCalledWith(UserModalComponent, {
+      data: { users: component.user }, disableClose: true
+    });
     expect(component.ngZone.run).toHaveBeenCalled();
     expect(component.loadData).toHaveBeenCalled();
   });
 
   it('should open the EditUserModalComponent and reload data when result is 1', () => {
-    const userMock = {
+    const userMock: User = {
       id: 1,
       firstName: 'Test',
       lastName: 'User',
@@ -74,7 +77,11 @@ describe('AdminComponent - Dialogs and Methods', () => {
       phone: '123456789',
       address: 'Test Address',
       password: 'password',
-      roles: ['admin']
+      rol: {
+        id: 2,
+        name: 'Customer',
+        description: 'Rol Customer'
+      }
     };
 
     const dialogRefSpy = {
@@ -87,7 +94,9 @@ describe('AdminComponent - Dialogs and Methods', () => {
 
     component.editElement(userMock);
 
-    expect(dialogSpy.open).toHaveBeenCalledWith(EditUserModalComponent, { data: { users: component.user, user: userMock }, disableClose: true });
+    expect(dialogSpy.open).toHaveBeenCalledWith(EditUserModalComponent, {
+      data: { users: component.user, user: userMock }, disableClose: true
+    });
     expect(component.ngZone.run).toHaveBeenCalled();
     expect(component.loadData).toHaveBeenCalled();
   });
@@ -95,40 +104,40 @@ describe('AdminComponent - Dialogs and Methods', () => {
   it('should validate productName as invalid when empty and touched', () => {
     const productNameControl = component.productForm.get('productName');
     productNameControl?.markAsTouched();
-    expect(component.validProductName).toBeTrue();
+    expect(productNameControl?.invalid).toBeTrue();
 
     productNameControl?.setValue('Valid Name');
-    expect(component.validProductName).toBeFalse();
+    expect(productNameControl?.invalid).toBeFalse();
   });
 
   it('should validate description as invalid when empty and touched', () => {
     const descriptionControl = component.productForm.get('description');
     descriptionControl?.markAsTouched();
-    expect(component.validProductDescription).toBeTrue();
+    expect(descriptionControl?.invalid).toBeTrue();
 
     descriptionControl?.setValue('Valid Description');
-    expect(component.validProductDescription).toBeFalse();
+    expect(descriptionControl?.invalid).toBeFalse();
   });
 
   it('should validate price as invalid when empty or below zero and touched', () => {
     const priceControl = component.productForm.get('price');
     priceControl?.markAsTouched();
-    expect(component.validProductPrice).toBeTrue();
+    expect(priceControl?.invalid).toBeTrue();
 
     priceControl?.setValue(-5);
-    expect(component.validProductPrice).toBeTrue();
+    expect(priceControl?.invalid).toBeTrue();
 
     priceControl?.setValue(100);
-    expect(component.validProductPrice).toBeFalse();
+    expect(priceControl?.invalid).toBeFalse();
   });
 
   it('should validate category as invalid when empty and touched', () => {
     const categoryControl = component.productForm.get('category');
     categoryControl?.markAsTouched();
-    expect(component.validProductCategory).toBeTrue();
+    expect(categoryControl?.invalid).toBeTrue();
 
     categoryControl?.setValue('Valid Category');
-    expect(component.validProductCategory).toBeFalse();
+    expect(categoryControl?.invalid).toBeFalse();
   });
 
   it('should set userPaginator and call setupPagination when dataSource.paginator is null', () => {

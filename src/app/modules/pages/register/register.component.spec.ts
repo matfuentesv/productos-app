@@ -114,7 +114,11 @@ describe('RegisterComponent', () => {
       phone: '0987654321',
       address: '456 Main St',
       password: 'Password2',
-      roles: ['admin']
+      rol: {
+        id: 1,
+        name: "Admin",
+        description: "Rol Admin"
+      }
     };
     mockAuthService.loadUsers.and.returnValue([user]);
     mockAuthService.getUser.and.returnValue(user);

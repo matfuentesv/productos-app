@@ -79,7 +79,7 @@ describe('DataService', () => {
       expect(response).toEqual(mockResponse);
     });
 
-    const req = httpTestingController.expectOne(endpoints.products.path);
+    const req = httpTestingController.expectOne(endpoints.findAllProduct.path);
     expect(req.request.method).toBe('GET');
     req.flush(mockResponse);
   });
@@ -95,7 +95,11 @@ describe('DataService', () => {
         phone: '123456789',
         address: 'Address 1',
         password: 'password1',
-        roles: ['customer'],
+        rol: {
+          id: 2,
+          name: "Customer",
+          description: "Rol Customer"
+        }
       },
       {
         id: 2,
@@ -106,7 +110,11 @@ describe('DataService', () => {
         phone: '987654321',
         address: 'Address 2',
         password: 'password2',
-        roles: ['admin'],
+        rol: {
+          id: 2,
+          name: "Customer",
+          description: "Rol Customer"
+        }
       },
     ];
 
@@ -114,7 +122,7 @@ describe('DataService', () => {
       expect(users).toEqual(mockUsers);
     });
 
-    const req = httpTestingController.expectOne(endpoints.users.path);
+    const req = httpTestingController.expectOne(endpoints.findAllUsers.path);
     expect(req.request.method).toBe('GET');
     req.flush(mockUsers);
   });
@@ -129,14 +137,18 @@ describe('DataService', () => {
       phone: '456123789',
       address: 'Address 3',
       password: 'newpassword',
-      roles: ['customer'],
+      rol: {
+        id: 2,
+        name: "Customer",
+        description: "Rol Customer"
+      }
     };
 
     service.addUser([newUser]).subscribe((response) => {
       expect(response).toEqual(newUser);
     });
 
-    const req = httpTestingController.expectOne(endpoints.users.path);
+    const req = httpTestingController.expectOne(endpoints.findAllUsers.path);
     expect(req.request.method).toBe('POST');
     expect(req.request.headers.get('Content-Type')).toBe('application/json');
     expect(req.request.headers.get('Authorization')).toBe('Bearer 2d4b8422-c7f4-4b1d-8b73-439bba7af688');

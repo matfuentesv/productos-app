@@ -129,10 +129,10 @@ export class AccountComponent implements OnInit {
             this.users[index].address = this.accountForm.get('address')?.value;
             this.users[index].password = this.accountForm.get('password')?.value;
             //this.users[index].rol = this.objectUser?.rol ? "";
-            this.dataService.addUser(this.users).subscribe(rsp => {
+            this.dataService.updateUser(this.users[index]).subscribe(rsp => {
               this.authService.isLoggedIn.next(true);
               this.authService.userNameSubject.next(this.users[index].firstName);
-              this.authService.userRoleSubject.next(this.users[index].rol.name ==='Admin' ? 'admin' : 'customer');
+              this.authService.userRoleSubject.next(this.users[index].rol.name ==='Admin'? 'admin' : 'customer');
               this.authService.currentUser = this.users[index];
               this.snackBar.open('Usuario actualizado correctamente!', '', {
                 horizontalPosition: this.horizontalPosition,
