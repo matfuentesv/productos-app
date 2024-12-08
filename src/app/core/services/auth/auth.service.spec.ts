@@ -1,98 +1,134 @@
 import {TestBed} from '@angular/core/testing';
-import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
-import {Rol, User} from '../../../shared/models/user';
+import {AuthService} from './auth.service';
+import {Router} from '@angular/router';
 import {DataService} from '../data/data.service';
+import {of} from 'rxjs';
+import {User} from '../../../shared/models/user';
 
-const mockUsers: User[] = [
-  {
-    id: 1,
-    firstName: 'Original Name',
-    lastName: 'Last Name',
-    rut: '19.033.397-3',
-    email: 'original@example.com',
-    phone: '123456789',
-    address: '123 Street',
-    password: 'Password1',
-    rol: { id: 1, name: 'customer', description: 'Customer role' } as Rol,
-  },
-];
+describe('AuthService', () => {
+  let service: AuthService;
+  let router: jasmine.SpyObj<Router>;
+  let dataService: jasmine.SpyObj<DataService>;
 
-describe('DataService', () => {
-  let service: DataService;
-  let httpMock: HttpTestingController;
+  const mockUsers: User[] = [
+    {
+      id: 1,
+      firstName: 'John',
+      lastName: 'Doe',
+      rut: '12345678-9',
+      email: 'john.doe@example.com',
+      phone: '123456789',
+      address: '123 Street',
+      password: 'Password1',
+      rol: { id: 1, name: 'customer', description: 'Customer role' }
+    },
+    {
+      id: 2,
+      firstName: 'Admin',
+      lastName: 'User',
+      rut: '98765432-1',
+      email: 'admin@example.com',
+      phone: '987654321',
+      address: '456 Avenue',
+      password: 'AdminPass1',
+      rol: { id: 2, name: 'Admin', description: 'Admin role' }
+    }
+  ];
 
   beforeEach(() => {
+    router = jasmine.createSpyObj('Router', ['navigate']);
+    dataService = jasmine.createSpyObj('DataService', ['getUsers']);
+
+    dataService.getUsers.and.returnValue(of(mockUsers)); // Configurar el espía antes de instanciar el servicio
+
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [DataService],
+      providers: [
+        AuthService,
+        { provide: Router, useValue: router },
+        { provide: DataService, useValue: dataService }
+      ]
     });
 
-    service = TestBed.inject(DataService);
-    httpMock = TestBed.inject(HttpTestingController);
+    service = TestBed.inject(AuthService);
   });
 
-  afterEach(() => {
-    httpMock.verify();
+  it('should be created', () => {
+    expect(service).toBeTruthy();
   });
 
-  // it('should add a new user with role and return the updated list', () => {
-  //   const newUser: User = {
-  //     id: 2,
-  //     firstName: 'John',
-  //     lastName: 'Doe',
-  //     rut: '19.033.397-3',
-  //     email: 'john@example.com',
-  //     phone: '123456789',
-  //     address: '123 Street',
-  //     password: 'Password1',
-  //     rol: { id: 2, name: 'Admin', description: 'Administrator role' } as Rol,
-  //   };
-  //
-  //   const updatedUsers = [...mockUsers, newUser];
-  //
-  //   service.addUser(updatedUsers).subscribe((users) => {
-  //     expect(users).toEqual(updatedUsers);
-  //   });
-  //
-  //   const req = httpMock.expectOne('http://localhost:8081/api/createUser'); // Replace with your actual API endpoint
-  //   expect(req.request.method).toBe('POST');
-  //   req.flush(updatedUsers);
-  // });
-
-  it('should retrieve all users', () => {
-    service.getUsers().subscribe((users) => {
-      expect(users).toEqual(mockUsers);
-    });
-
-    const req = httpMock.expectOne('http://localhost:8081/api/findAllUsers'); // Replace with your actual API endpoint
-    expect(req.request.method).toBe('GET');
-    req.flush(mockUsers);
+  it('should load users on initialization', () => {
+    service.loadUsers();
+    expect(service['users']).toEqual(mockUsers);
   });
 
-  // it('should handle error when adding a user', () => {
-  //   const newUser: User = {
-  //     id: 2,
-  //     firstName: 'John',
-  //     lastName: 'Doe',
-  //     rut: '19.033.397-3',
-  //     email: 'john@example.com',
-  //     phone: '123456789',
-  //     address: '123 Street',
-  //     password: 'Password1',
-  //     rol: { id: 2, name: 'Admin', description: 'Administrator role' } as Rol,
-  //   };
-  //
-  //
-  //
-  //   service.createUser(newUser).subscribe({
-  //     next: () => fail('Expected error, but got success response'),
-  //     error: (error) => {
-  //       expect(error.status).toBe(400);
-  //     },
-  //   });
-  //
-  //   const req = httpMock.expectOne('http://localhost:8081/api/createUser'); // Replace with your actual API endpoint
-  //   expect(req.request.method).toBe('PUT');
-  //   req.flush({ status: 400, statusText: 'Bad Request' });
-  // });
+  it('should login a user with correct credentials', () => {
+    service.loadUsers();
+    const result = service.login('john.doe@example.com', 'Password1');
+    expect(result).toBeTrue();
+    expect(service.isLoggedIn.value).toBeTrue();
+    expect(service.userNameSubject.value).toBe('John');
+    expect(service.userRoleSubject.value).toBe('customer');
+    expect(service.currentUser).toEqual(mockUsers[0]);
+  });
+
+  it('should not login a user with incorrect credentials', () => {
+    service.loadUsers();
+    const result = service.login('john.doe@example.com', 'WrongPassword');
+    expect(result).toBeFalse();
+    expect(service.isLoggedIn.value).toBeFalse();
+    expect(service.userNameSubject.value).toBeNull();
+    expect(service.userRoleSubject.value).toBeNull();
+    expect(service.currentUser).toBeNull();
+  });
+
+  it('should logout a user', () => {
+    service.loadUsers();
+    service.login('john.doe@example.com', 'Password1');
+    service.logout();
+    expect(service.isLoggedIn.value).toBeFalse();
+    expect(service.userNameSubject.value).toBeNull();
+    expect(service.userRoleSubject.value).toBeNull();
+    expect(service.currentUser).toBeNull();
+    expect(router.navigate).toHaveBeenCalledWith(['/login']);
+  });
+
+  it('should return authentication status', () => {
+    expect(service.isAuthenticated()).toBeFalse();
+    service.login('john.doe@example.com', 'Password1');
+    expect(service.isAuthenticated()).toBeTrue();
+  });
+
+  it('should return the current user name', () => {
+    service.loadUsers();
+    service.login('john.doe@example.com', 'Password1');
+    expect(service.getUserName()).toBe('John');
+  });
+
+  it('should return the current user role', () => {
+    service.loadUsers();
+    service.login('admin@example.com', 'AdminPass1');
+    expect(service.getUserRole()).toBe('admin');
+  });
+
+  it('should return the current user', () => {
+    service.loadUsers();
+    service.login('john.doe@example.com', 'Password1');
+    expect(service.getUser()).toEqual(mockUsers[0]);
+  });
+
+  it('should add a new user', () => {
+    const newUser: User = {
+      id: 3,
+      firstName: 'New',
+      lastName: 'User',
+      rut: '11223344-5',
+      email: 'new.user@example.com',
+      phone: '1122334455',
+      address: '789 Boulevard',
+      password: 'NewUserPass1',
+      rol: { id: 1, name: 'customer', description: 'Customer role' }
+    };
+    service.setUser(newUser);
+    expect(service['users']).toContain(newUser);
+  });
 });
