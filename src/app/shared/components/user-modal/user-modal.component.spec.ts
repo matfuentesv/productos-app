@@ -47,47 +47,6 @@ describe('UserModalComponent', () => {
     component.user = [...mockUsers];
   });
 
-  // it('should add a new user and show a success snackbar', () => {
-  //   dataService.addUser.and.returnValue(of({}));
-  //
-  //   component.ngOnInit();
-  //
-  //   component.userForm.setValue({
-  //     firstName: 'John',
-  //     lastName: 'Doe',
-  //     rut: '19.033.397-3',
-  //     email: 'john@example.com',
-  //     phone: '123456789',
-  //     address: '123 Street',
-  //     password: 'Password1',
-  //     rol: { id: 2, name: 'Admin', description: 'Administrator role' } as Rol,
-  //   });
-  //
-  //   component.onSubmit();
-  //
-  //   expect(dataService.addUser).toHaveBeenCalledWith([
-  //     ...mockUsers,
-  //     {
-  //       id: jasmine.any(Number),
-  //       firstName: 'John',
-  //       lastName: 'Doe',
-  //       rut: '19.033.397-3',
-  //       email: 'john@example.com',
-  //       phone: '123456789',
-  //       address: '123 Street',
-  //       password: 'Password1',
-  //       rol: { id: 2, name: 'Admin', description: 'Administrator role' } as Rol,
-  //     },
-  //   ]);
-  //
-  //   expect(snackBar.open).toHaveBeenCalledWith(
-  //     'Usuario creado correctamente!',
-  //     '',
-  //     { duration: 3000, horizontalPosition: 'start', verticalPosition: 'bottom', panelClass: ['custom-snackbar'] }
-  //   );
-  //   expect(dialogRef.close).toHaveBeenCalledWith(1);
-  // });
-
   it('should not add user if form is invalid', () => {
     component.ngOnInit();
     component.userForm.setValue({
@@ -114,18 +73,13 @@ describe('UserModalComponent', () => {
     expect(result).toBeTrue();
   });
 
-  // it('should return true for "+" character input', () => {
-  //   const plusEvent = { charCode: 43 } as KeyboardEvent; // Char code for '+'
-  //   const result = component.validateNumbers(plusEvent);
-  //   expect(result).toBeTrue();
-  // });
-
   it('should return false for non-numeric input', () => {
     const invalidEvent = { charCode: 65 } as KeyboardEvent; // Char code for 'A'
     const result = component.validateNumbers(invalidEvent);
     expect(result).toBeFalse();
   });
 
+  // Nuevas pruebas para validateCharacters
   it('should return true for valid character input (uppercase letters)', () => {
     const validEventUppercase = { charCode: 65 } as KeyboardEvent; // Char code for 'A'
     const result = component.validateCharacters(validEventUppercase);
@@ -163,5 +117,12 @@ describe('UserModalComponent', () => {
   it('should throw an error for undefined input', () => {
     expect(() => component.validateCharacters(undefined as any)).toThrowError();
   });
+
+  it('should close the dialog with the given value', () => {
+    const closeValue = 1;
+    component.close(closeValue);
+    expect(dialogRef.close).toHaveBeenCalledWith(closeValue);
+  });
+
 
 });
