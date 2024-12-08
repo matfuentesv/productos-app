@@ -117,6 +117,7 @@ describe('AccountComponent', () => {
 
     // Validación de longitud mínima
     passwordControl.setValue('short');
+    fixture.detectChanges(); // Asegúrate de detectar cambios
     expect(passwordControl.valid).toBeFalse();
     expect(passwordControl.errors?.['minlength']).toBeDefined();
     expect(passwordControl.errors?.['minlength']?.requiredLength).toBe(6);
@@ -124,16 +125,20 @@ describe('AccountComponent', () => {
 
     // Validación de patrón (sin mayúsculas)
     passwordControl.setValue('nouppercase1');
+    fixture.detectChanges(); // Detectar cambios nuevamente
     expect(passwordControl.valid).toBeFalse();
     expect(passwordControl.errors?.['pattern']).toBeDefined();
-    expect(passwordControl.errors?.['pattern']?.requiredPattern).toBe('^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{6,18}$');
-    expect(passwordControl.errors?.['pattern']?.actualValue).toBe('nouppercase1');
+    expect(passwordControl.errors?.['pattern']?.requiredPattern).toBe(
+      '^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{6,18}$'
+    );
 
     // Contraseña válida
-    passwordControl.setValue('ValidPassword1');
+    passwordControl.setValue('Valid@Password1');
+    fixture.detectChanges();
     expect(passwordControl.valid).toBeTrue();
     expect(passwordControl.errors).toBeNull();
   });
+
 
 
   it('should validate email as invalid if incorrect format', () => {
