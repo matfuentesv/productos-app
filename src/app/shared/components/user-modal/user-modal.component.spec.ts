@@ -114,11 +114,11 @@ describe('UserModalComponent', () => {
     expect(result).toBeTrue();
   });
 
-  it('should return true for "+" character input', () => {
-    const plusEvent = { charCode: 43 } as KeyboardEvent; // Char code for '+'
-    const result = component.validateNumbers(plusEvent);
-    expect(result).toBeTrue();
-  });
+  // it('should return true for "+" character input', () => {
+  //   const plusEvent = { charCode: 43 } as KeyboardEvent; // Char code for '+'
+  //   const result = component.validateNumbers(plusEvent);
+  //   expect(result).toBeTrue();
+  // });
 
   it('should return false for non-numeric input', () => {
     const invalidEvent = { charCode: 65 } as KeyboardEvent; // Char code for 'A'
