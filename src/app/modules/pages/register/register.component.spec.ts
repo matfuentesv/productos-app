@@ -231,4 +231,44 @@ describe('RegisterComponent', () => {
   //   expect(mockRouter.navigate).not.toHaveBeenCalled();
   // }));
 
+  it('should return true for uppercase letters in validateCharacters', () => {
+    const event = { charCode: 65 }; // 'A'
+    expect(component.validateCharacters(event)).toBe(true);
+  });
+
+  it('should return true for lowercase letters in validateCharacters', () => {
+    const event = { charCode: 97 }; // 'a'
+    expect(component.validateCharacters(event)).toBe(true);
+  });
+
+  it('should return true for space in validateCharacters', () => {
+    const event = { charCode: 32 }; // ' '
+    expect(component.validateCharacters(event)).toBe(true);
+  });
+
+  it('should return false for numbers in validateCharacters', () => {
+    const event = { charCode: 48 }; // '0'
+    expect(component.validateCharacters(event)).toBe(false);
+  });
+
+  it('should return false for special characters in validateCharacters', () => {
+    const event = { charCode: 64 }; // '@'
+    expect(component.validateCharacters(event)).toBe(false);
+  });
+
+  it('should return true for valid numeric input in validateNumbers', () => {
+    const event = { charCode: 50 }; // '2'
+    expect(component.validateNumbers(event)).toBe(true);
+  });
+
+  it('should return true for "+" character in validateNumbers', () => {
+    const event = { charCode: 107 }; // '+'
+    expect(component.validateNumbers(event)).toBe(true);
+  });
+
+  it('should return false for non-numeric input in validateNumbers', () => {
+    const event = { charCode: 65 }; // 'A'
+    expect(component.validateNumbers(event)).toBe(false);
+  });
+
 });

@@ -142,12 +142,6 @@ export class RegisterComponent implements OnInit {
              }
         });
 
-        // await this.loadUsers();
-        //
-        // // this.users.find(u => u.email === newUser.email && u.password === newUser.password).
-        // // if (user) {
-        //
-        // // }
       } catch (error) {
         this.snackBar.open('Error en el registro o login', 'Cerrar', {
           duration: 3000,
