@@ -35,7 +35,7 @@ describe('AdminComponent - Dialogs and Methods', () => {
     fixture = TestBed.createComponent(AdminComponent);
     component = fixture.componentInstance;
 
-    // Inicializar el formulario
+
     component.productForm = new FormGroup({
       productName: new FormControl('', [Validators.required]),
       description: new FormControl('', [Validators.required]),

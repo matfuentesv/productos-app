@@ -4,7 +4,7 @@ import {Location} from '@angular/common';
 import {cartRoutes} from './cart.routes';
 import {Component} from '@angular/core';
 
-// Componente mock para las pruebas
+
 @Component({
   standalone: true,
   selector: 'app-mock-cart',
@@ -33,10 +33,8 @@ describe('CartRoutes (Standalone)', () => {
   it('should dynamically load CartComponent', async () => {
     const route = cartRoutes[0];
 
-    // Verificamos si `loadComponent` está definido como una función
-    expect(typeof route.loadComponent).toBe('function');
 
-    // Ejecutamos el método y verificamos que retorne un valor válido
+    expect(typeof route.loadComponent).toBe('function');
     const component = await route.loadComponent!();
     expect(component).toBeTruthy();
   });

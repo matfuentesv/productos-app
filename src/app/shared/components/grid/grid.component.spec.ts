@@ -5,7 +5,7 @@ import {MatSnackBar} from '@angular/material/snack-bar';
 import {Products} from '../../models/products';
 import {CartService} from '../../../core/services/cart/cart.service';
 
-// Mock data
+
 const mockProducts: Products[] = [
   {
 
@@ -75,7 +75,7 @@ describe('GridComponent', () => {
   });
 
   it('should return correct star classes based on rating', () => {
-    // Test case for rating = 3
+
     let stars = component.getStars(3);
     expect(stars).toEqual([
       'fas fa-star text-warning',
@@ -85,7 +85,6 @@ describe('GridComponent', () => {
       'far fa-star text-warning'
     ]);
 
-    // Test case for rating = 5
     stars = component.getStars(5);
     expect(stars).toEqual([
       'fas fa-star text-warning',
@@ -95,7 +94,7 @@ describe('GridComponent', () => {
       'fas fa-star text-warning'
     ]);
 
-    // Test case for rating = 0
+
     stars = component.getStars(0);
     expect(stars).toEqual([
       'far fa-star text-warning',

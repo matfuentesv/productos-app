@@ -130,7 +130,7 @@ describe('HomeComponent', () => {
 
     expect(spinner.classList.contains('hidden')).toBeFalse();
 
-    // Clean up
+
     document.body.removeChild(spinner);
   });
 
@@ -144,7 +144,6 @@ describe('HomeComponent', () => {
 
     expect(spinner.classList.contains('hidden')).toBeTrue();
 
-    // Clean up
     document.body.removeChild(spinner);
   });
 

@@ -68,44 +68,44 @@ describe('UserModalComponent', () => {
   });
 
   it('should return true for valid numeric input', () => {
-    const validEvent = { charCode: 50 } as KeyboardEvent; // Char code for '2'
+    const validEvent = { charCode: 50 } as KeyboardEvent;
     const result = component.validateNumbers(validEvent);
     expect(result).toBeTrue();
   });
 
   it('should return false for non-numeric input', () => {
-    const invalidEvent = { charCode: 65 } as KeyboardEvent; // Char code for 'A'
+    const invalidEvent = { charCode: 65 } as KeyboardEvent;
     const result = component.validateNumbers(invalidEvent);
     expect(result).toBeFalse();
   });
 
-  // Nuevas pruebas para validateCharacters
+
   it('should return true for valid character input (uppercase letters)', () => {
-    const validEventUppercase = { charCode: 65 } as KeyboardEvent; // Char code for 'A'
+    const validEventUppercase = { charCode: 65 } as KeyboardEvent;
     const result = component.validateCharacters(validEventUppercase);
     expect(result).toBeTrue();
   });
 
   it('should return true for valid character input (lowercase letters)', () => {
-    const validEventLowercase = { charCode: 97 } as KeyboardEvent; // Char code for 'a'
+    const validEventLowercase = { charCode: 97 } as KeyboardEvent;
     const result = component.validateCharacters(validEventLowercase);
     expect(result).toBeTrue();
   });
 
   it('should return true for space character input', () => {
-    const spaceEvent = { charCode: 32 } as KeyboardEvent; // Char code for space
+    const spaceEvent = { charCode: 32 } as KeyboardEvent;
     const result = component.validateCharacters(spaceEvent);
     expect(result).toBeTrue();
   });
 
   it('should return false for numeric input', () => {
-    const invalidNumericEvent = { charCode: 48 } as KeyboardEvent; // Char code for '0'
+    const invalidNumericEvent = { charCode: 48 } as KeyboardEvent;
     const result = component.validateCharacters(invalidNumericEvent);
     expect(result).toBeFalse();
   });
 
   it('should return false for special character input', () => {
-    const invalidSpecialCharEvent = { charCode: 33 } as KeyboardEvent; // Char code for '!'
+    const invalidSpecialCharEvent = { charCode: 33 } as KeyboardEvent;
     const result = component.validateCharacters(invalidSpecialCharEvent);
     expect(result).toBeFalse();
   });

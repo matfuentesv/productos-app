@@ -78,14 +78,14 @@ describe('PagesComponent', () => {
   });
 
   it('should update userName and userRole on NavigationEnd event', () => {
-    // Simulamos un evento de navegación
+
     const navigationEnd = new NavigationEnd(0, '', '');
     routerMock.events = of(navigationEnd).pipe(filter(event => event instanceof NavigationEnd));
 
-    // Forzamos la detección de cambios
+
     fixture.detectChanges();
 
-    // Verificamos que los valores se actualizan correctamente
+
     expect(component.userName).toBe('testUser');
     expect(component.userRole).toBe('admin');
   });

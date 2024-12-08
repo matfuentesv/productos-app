@@ -4,7 +4,7 @@ import {Location} from '@angular/common';
 import {accountRoutes} from './account.routes';
 import {Component} from '@angular/core';
 
-// Componente mock para las pruebas
+
 @Component({
   standalone: true,
   selector: 'app-mock-account',
@@ -19,8 +19,8 @@ describe('AccountRoutes (Standalone)', () => {
     await TestBed.configureTestingModule({
       imports: [
         RouterTestingModule.withRoutes([
-          { path: '', component: MockAccountComponent }, // Ruta predeterminada
-          ...accountRoutes, // Cargamos las rutas del archivo original
+          { path: '', component: MockAccountComponent },
+          ...accountRoutes,
         ]),
       ],
     }).compileComponents();
@@ -32,10 +32,9 @@ describe('AccountRoutes (Standalone)', () => {
   it('should dynamically load AccountComponent', async () => {
     const route = accountRoutes[0];
 
-    // Verificamos si `loadComponent` está definido como una función
+
     expect(typeof route.loadComponent).toBe('function');
 
-    // Ejecutamos el método y verificamos que retorne un valor válido
     const component = await route.loadComponent!();
     expect(component).toBeTruthy();
   });

@@ -64,16 +64,16 @@ describe('CartComponent', () => {
 
     expect(component.objectUser).toEqual(mockUser);
     expect(component.items).toEqual(mockProducts);
-    expect(component.total).toBe(400); // 100*2 + 200
-    expect(component.discount).toBe(30); // (100*2*0.1 + 200*0.05)
+    expect(component.total).toBe(400);
+    expect(component.discount).toBe(30);
   });
 
   it('should calculate total and discount correctly', () => {
     component.items = mockProducts;
     component.calculateTotal();
 
-    expect(component.total).toBe(400); // 100*2 + 200
-    expect(component.discount).toBe(30); // (100*2*0.1 + 200*0.05)
+    expect(component.total).toBe(400);
+    expect(component.discount).toBe(30);
   });
 
   it('should update quantity and recalculate total', () => {
@@ -93,8 +93,8 @@ describe('CartComponent', () => {
 
     expect(cartService.removeItem).toHaveBeenCalledWith('Product 1');
     expect(component.items).toEqual([mockProducts[1]]);
-    expect(component.total).toBe(200); // 200
-    expect(component.discount).toBe(10); // (200*0.05)
+    expect(component.total).toBe(200);
+    expect(component.discount).toBe(10);
   });
 
   it('should show alert if no items in cart on pay', () => {
@@ -106,26 +106,4 @@ describe('CartComponent', () => {
     expect(window.alert).toHaveBeenCalledWith('No hay productos en el carrito para pagar.');
   });
 
-  // it('should create order and show success message on pay', () => {
-  //   component.items = mockProducts;
-  //   authService.getUser.and.returnValue(mockUser);
-  //   dataService.createOrder.and.returnValue(of({ success: true }));
-  //
-  //   component.pay();
-  //
-  //   expect(dataService.createOrder).toHaveBeenCalledWith({
-  //     userName: 'John',
-  //     products: [
-  //       { productName: 'Product 1', price: 100, quantity: 2 },
-  //       { productName: 'Product 2', price: 200, quantity: 1 }
-  //     ]
-  //   });
-  //
-  //   expect(snackBar.open).toHaveBeenCalledWith('Usuario actualizado correctamente!', '', {
-  //     horizontalPosition: component.horizontalPosition,
-  //     verticalPosition: component.verticalPosition,
-  //     duration: 3000,
-  //     panelClass: ['custom-snackbar']
-  //   });
-  // });
 });

@@ -39,7 +39,7 @@ describe('AuthService', () => {
     router = jasmine.createSpyObj('Router', ['navigate']);
     dataService = jasmine.createSpyObj('DataService', ['getUsers']);
 
-    dataService.getUsers.and.returnValue(of(mockUsers)); // Configurar el espía antes de instanciar el servicio
+    dataService.getUsers.and.returnValue(of(mockUsers));
 
     TestBed.configureTestingModule({
       providers: [

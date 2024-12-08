@@ -7,7 +7,7 @@ describe('AppComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [AppComponent], // Standalone components should be imported directly
+      imports: [AppComponent],
     }).compileComponents();
   });
 
@@ -25,8 +25,4 @@ describe('AppComponent', () => {
     expect(component.title).toBe('productos-app');
   });
 
-  // it('should render title in the template', () => {
-  //   const compiled = fixture.nativeElement;
-  //   expect(compiled.querySelector('h1')?.textContent).toContain('productos-app');
-  // });
 });

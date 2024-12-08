@@ -7,7 +7,7 @@ import {Pipe, PipeTransform} from '@angular/core';
 export class CustomCurrencyPipe implements PipeTransform {
 
   transform(value: number | string | null | undefined): string | null {
-    // Validar valores nulos o indefinidos
+
     if (value === null || value === undefined || isNaN(Number(value))) {
       return null;
     }

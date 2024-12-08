@@ -155,9 +155,9 @@ export class AccountComponent implements OnInit {
 
   validateCharacters(event: { charCode: number; }): boolean {
     return (
-      (event.charCode >= 65 && event.charCode <= 90) || // Letras mayúsculas (A-Z)
-      (event.charCode >= 97 && event.charCode <= 122) || // Letras minúsculas (a-z)
-      event.charCode === 32 // Espacios
+      (event.charCode >= 65 && event.charCode <= 90) ||
+      (event.charCode >= 97 && event.charCode <= 122) ||
+      event.charCode === 32
     );
   }
 

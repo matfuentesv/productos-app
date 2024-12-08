@@ -75,7 +75,7 @@ export class CartComponent implements OnInit {
 
 
     const orderPayload: { userName: string; products: { productName: string; price: number; quantity: number }[] } = {
-      userName: this.objectUser?.firstName || 'Usuario Anónimo', // Valor predeterminado si no está definido
+      userName: this.objectUser?.firstName || 'Usuario Anónimo',
       products: this.items.map((item: Products) => ({
         productName: item.name,
         price: item.price,

@@ -87,10 +87,10 @@ describe('AccountComponent', () => {
   });
 
   it('should validate numbers correctly', () => {
-    const event = { charCode: 49 }; // '1'
+    const event = { charCode: 49 };
     expect(component.validateNumbers(event)).toBeTrue();
 
-    const invalidEvent = { charCode: 65 }; // 'A'
+    const invalidEvent = { charCode: 65 };
     expect(component.validateNumbers(invalidEvent)).toBeFalse();
   });
 
@@ -115,24 +115,23 @@ describe('AccountComponent', () => {
   it('should validate password as invalid if it does not meet requirements', () => {
     const passwordControl = component.accountForm.controls['password'];
 
-    // Validación de longitud mínima
     passwordControl.setValue('short');
-    fixture.detectChanges(); // Asegúrate de detectar cambios
+    fixture.detectChanges();
     expect(passwordControl.valid).toBeFalse();
     expect(passwordControl.errors?.['minlength']).toBeDefined();
     expect(passwordControl.errors?.['minlength']?.requiredLength).toBe(6);
     expect(passwordControl.errors?.['minlength']?.actualLength).toBe(5);
 
-    // Validación de patrón (sin mayúsculas)
+
     passwordControl.setValue('nouppercase1');
-    fixture.detectChanges(); // Detectar cambios nuevamente
+    fixture.detectChanges();
     expect(passwordControl.valid).toBeFalse();
     expect(passwordControl.errors?.['pattern']).toBeDefined();
     expect(passwordControl.errors?.['pattern']?.requiredPattern).toBe(
       '^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{6,18}$'
     );
 
-    // Contraseña válida
+
     passwordControl.setValue('Valid@Password1');
     fixture.detectChanges();
     expect(passwordControl.valid).toBeTrue();
@@ -153,42 +152,42 @@ describe('AccountComponent', () => {
   });
 
   it('should return true for uppercase letters in validateCharacters', () => {
-    const event = { charCode: 65 }; // 'A'
+    const event = { charCode: 65 };
     expect(component.validateCharacters(event)).toBe(true);
   });
 
   it('should return true for lowercase letters in validateCharacters', () => {
-    const event = { charCode: 97 }; // 'a'
+    const event = { charCode: 97 };
     expect(component.validateCharacters(event)).toBe(true);
   });
 
   it('should return true for space in validateCharacters', () => {
-    const event = { charCode: 32 }; // ' '
+    const event = { charCode: 32 };
     expect(component.validateCharacters(event)).toBe(true);
   });
 
   it('should return false for numbers in validateCharacters', () => {
-    const event = { charCode: 48 }; // '0'
+    const event = { charCode: 48 };
     expect(component.validateCharacters(event)).toBe(false);
   });
 
   it('should return false for special characters in validateCharacters', () => {
-    const event = { charCode: 64 }; // '@'
+    const event = { charCode: 64 };
     expect(component.validateCharacters(event)).toBe(false);
   });
 
   it('should return true for valid numeric input in validateNumbers', () => {
-    const event = { charCode: 50 }; // '2'
+    const event = { charCode: 50 };
     expect(component.validateNumbers(event)).toBe(true);
   });
 
   it('should return true for "+" character in validateNumbers', () => {
-    const event = { charCode: 107 }; // '+'
+    const event = { charCode: 107 };
     expect(component.validateNumbers(event)).toBe(true);
   });
 
   it('should return false for non-numeric input in validateNumbers', () => {
-    const event = { charCode: 65 }; // 'A'
+    const event = { charCode: 65 };
     expect(component.validateNumbers(event)).toBe(false);
   });
 });

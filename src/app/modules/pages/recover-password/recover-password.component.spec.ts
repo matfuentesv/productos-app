@@ -22,10 +22,10 @@ describe('RecoverPasswordComponent', () => {
     fixture.detectChanges();
   });
 
-  // Prueba adicional para onSubmit
+
   it('should open a snackbar if form is valid', () => {
     spyOn(snackBar, 'open');
-    component.recover.get('email')?.setValue('test@example.com'); // Formulario válido
+    component.recover.get('email')?.setValue('test@example.com');
     component.onSubmit();
     expect(snackBar.open).toHaveBeenCalledWith(
       'Contraseña enviada con exito!',
@@ -41,7 +41,7 @@ describe('RecoverPasswordComponent', () => {
 
   it('should mark all controls as touched if form is invalid', () => {
     spyOn(component.recover.controls['email'], 'markAsTouched');
-    component.recover.get('email')?.setValue(''); // Formulario inválido
+    component.recover.get('email')?.setValue('');
     component.onSubmit();
     expect(component.recover.controls['email'].markAsTouched).toHaveBeenCalled();
   });

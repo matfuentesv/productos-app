@@ -4,7 +4,7 @@ import {Location} from '@angular/common';
 import {Component} from '@angular/core';
 import {appAirConditioningRoutes} from './app-air-conditioning.routes';
 
-// Componente mock para las pruebas
+
 @Component({
   standalone: true,
   selector: 'app-mock-air-conditioning',
@@ -31,10 +31,10 @@ describe('AirConditioningRoutes (Standalone)', () => {
   it('should dynamically load AirConditioningComponent', async () => {
     const route = appAirConditioningRoutes[0];
 
-    // Verificamos si `loadComponent` está definido como una función
+
     expect(typeof route.loadComponent).toBe('function');
 
-    // Ejecutamos el método y verificamos que retorne un valor válido
+
     const component = await route.loadComponent!();
     expect(component).toBeTruthy();
   });

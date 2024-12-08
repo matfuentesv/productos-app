@@ -95,79 +95,52 @@ describe('EditUserModalComponent', () => {
     expect(dialogRef.close).not.toHaveBeenCalled();
   });
 
-  // it('should update user if form is valid', () => {
-  //   spyOn(Swal, 'fire').and.returnValue(Promise.resolve({ isConfirmed: true }));
-  //   dataService.updateUser.and.returnValue(of(true));
-  //
-  //   component.ngOnInit();
-  //   component.userForm.setValue({
-  //     firstName: 'Updated Name',
-  //     lastName: 'Updated Last Name',
-  //     rut: '19.033.397-3',
-  //     email: 'updated@example.com',
-  //     phone: '987654321',
-  //     address: '456 Avenue',
-  //     password: 'UpdatedPassword1',
-  //     rol: 1,
-  //   });
-  //
-  //   component.onSubmit();
-  //
-  //   expect(dataService.updateUser).toHaveBeenCalled();
-  //   expect(snackBar.open).toHaveBeenCalledWith('Usuario actualizado correctamente!', '', {
-  //     horizontalPosition: component.horizontalPosition,
-  //     verticalPosition: component.verticalPosition,
-  //     duration: 3000,
-  //     panelClass: ['custom-snackbar']
-  //   });
-  //   expect(dialogRef.close).toHaveBeenCalledWith(1);
-  // });
+
 
   it('should return true for valid numeric input', () => {
-    const validEvent = { charCode: 50 } as KeyboardEvent; // Char code for '2'
+    const validEvent = { charCode: 50 } as KeyboardEvent;
     const result = component.validateNumbers(validEvent);
     expect(result).toBeTrue();
   });
 
   it('should return false for non-numeric input', () => {
-    const invalidEvent = { charCode: 65 } as KeyboardEvent; // Char code for 'A'
+    const invalidEvent = { charCode: 65 } as KeyboardEvent;
     const result = component.validateNumbers(invalidEvent);
     expect(result).toBeFalse();
   });
 
   it('should return true for uppercase letters', () => {
-    const event = { charCode: 65 }; // 'A'
+    const event = { charCode: 65 };
     expect(validateCharacters(event)).toBe(true);
   });
 
   it('should return true for lowercase letters', () => {
-    const event = { charCode: 97 }; // 'a'
+    const event = { charCode: 97 };
     expect(validateCharacters(event)).toBe(true);
   });
 
   it('should return true for space', () => {
-    const event = { charCode: 32 }; // ' '
+    const event = { charCode: 32 };
     expect(validateCharacters(event)).toBe(true);
   });
 
   it('should return false for numbers', () => {
-    const event = { charCode: 48 }; // '0'
+    const event = { charCode: 48 };
     expect(validateCharacters(event)).toBe(false);
   });
 
   it('should return false for special characters', () => {
-    const event = { charCode: 64 }; // '@'
+    const event = { charCode: 64 };
     expect(validateCharacters(event)).toBe(false);
   });
 
   it('should close the dialog with the provided value', () => {
-    // Valor que se pasa al método close
+
     const mockValue = 1;
 
-    // Llama al método close del componente
+
     component.close(mockValue);
 
-    // Verifica que `dialogRef.close` haya sido llamado con el valor correcto
     expect(dialogRef.close).toHaveBeenCalledWith(mockValue);
   });
 
@@ -195,9 +168,9 @@ describe('EditUserModalComponent', () => {
 
 function validateCharacters(event: { charCode: number; }): boolean {
   return (
-    (event.charCode >= 65 && event.charCode <= 90) || // Letras mayúsculas (A-Z)
-    (event.charCode >= 97 && event.charCode <= 122) || // Letras minúsculas (a-z)
-    event.charCode === 32 // Espacios
+    (event.charCode >= 65 && event.charCode <= 90) ||
+    (event.charCode >= 97 && event.charCode <= 122) ||
+    event.charCode === 32
   );
 
 
