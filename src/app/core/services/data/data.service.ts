@@ -4,6 +4,7 @@ import {Observable} from 'rxjs';
 import {Order, ProductsResponse} from "../../../shared/models/products";
 import {User} from "../../../shared/models/user";
 import {endpoints} from '../../../enviroments/endpoints';
+import {ApiResponse} from '../../../shared/models/api-response';
 
 
 @Injectable({
@@ -63,7 +64,15 @@ export class DataService {
     return  this.http.post(endpoints.findAllUsers.path,user,this.httpOptions);
   }
 
+
   getOrders(): Observable<Order[]> {
     return this.http.get<Order[]>(endpoints.findAllOrders.path);
+  }
+
+  createOrder(order: {
+    userName: string;
+    products: { productName: string; price: number; quantity: number }[]
+  }): Observable<ApiResponse> {
+    return this.http.post<ApiResponse>(endpoints.payOrder.path, order);
   }
 }

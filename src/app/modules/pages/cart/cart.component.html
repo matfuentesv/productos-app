@@ -25,7 +25,7 @@
       <p>Productos: {{ total | customCurrency }}</p>
       <p>Descuentos: {{ discount | customCurrency }}</p>
       <p>Total: {{ (total - discount) | customCurrency }}</p>
-      <button class="btn btn-primary">Pagar</button>
+      <button class="btn btn-primary" (click)="pay()">Pagar</button>
     </div>
   </div>
 </div>

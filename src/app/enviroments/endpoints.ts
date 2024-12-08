@@ -38,6 +38,11 @@ export const endpoints = {
     name: 'Find Orders',
     description: 'Listar ordenes de compra',
     path: 'http://localhost:8082/api/orders'
+  },
+  payOrder:{
+    name: 'Pay Orders',
+    description: 'Pagar ordenes de compra',
+    path: 'http://localhost:8082/api/orders'
   }
 
 }

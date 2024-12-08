@@ -4,6 +4,10 @@ import {FormsModule} from '@angular/forms';
 import {CustomCurrencyPipe} from '../../../shared/pipes/customCurrency';
 import {Products} from '../../../shared/models/products';
 import {CartService} from '../../../core/services/cart/cart.service';
+import {AuthService} from '../../../core/services/auth/auth.service';
+import {DataService} from '../../../core/services/data/data.service';
+import {User} from '../../../shared/models/user';
+import {MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition} from '@angular/material/snack-bar';
 
 
 @Component({
@@ -24,11 +28,17 @@ export class CartComponent implements OnInit {
   items: Products[] = [];
   total: number = 0;
   discount: number = 0;
-
-  constructor(private cartService: CartService) { }
+  objectUser: User | null | undefined;
+  horizontalPosition: MatSnackBarHorizontalPosition = 'start';
+  verticalPosition: MatSnackBarVerticalPosition = 'bottom';
+  constructor(private cartService: CartService,
+              private authService: AuthService,
+              private  dataService: DataService,
+              private snackBar: MatSnackBar,) { }
 
 
   ngOnInit(): void {
+    this.objectUser = this.authService.getUser();
     this.items = this.cartService.getItems();
     console.log('Items en el carrito:', this.items);
     this.calculateTotal();
@@ -56,10 +66,35 @@ export class CartComponent implements OnInit {
     this.calculateTotal();
   }
 
+  pay(): void {
 
-  clearCart(): void {
-    this.items = this.cartService.clearCart();
-    this.total = 0;
-    this.discount = 0;
+    if (this.items.length === 0) {
+      alert('No hay productos en el carrito para pagar.');
+      return;
+    }
+
+
+    const orderPayload: { userName: string; products: { productName: string; price: number; quantity: number }[] } = {
+      userName: this.objectUser?.firstName || 'Usuario Anónimo', // Valor predeterminado si no está definido
+      products: this.items.map((item: Products) => ({
+        productName: item.name,
+        price: item.price,
+        quantity: item.quantity || 1
+      }))
+    };
+
+
+    this.dataService.createOrder(orderPayload).subscribe(rsp =>{
+       if(rsp.success){
+         this.snackBar.open('Usuario actualizado correctamente!', '', {
+           horizontalPosition: this.horizontalPosition,
+           verticalPosition: this.verticalPosition,
+           duration: 3000,
+           panelClass: ['custom-snackbar']
+         });
+       }
+    });
   }
+
+
 }
