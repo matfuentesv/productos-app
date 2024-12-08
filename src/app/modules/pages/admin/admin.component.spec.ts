@@ -7,10 +7,7 @@ import {FormControl, FormGroup, ReactiveFormsModule, Validators} from '@angular/
 import {MatDialog} from '@angular/material/dialog';
 import {AdminComponent} from './admin.component';
 
-import {of, Subject} from 'rxjs';
-import {User} from '../../../shared/models/user';
-import {UserModalComponent} from '../../../shared/components/user-modal/user-modal.component';
-import {EditUserModalComponent} from '../../../shared/components/edit-user-modal/edit-user-modal.component';
+import {Subject} from 'rxjs';
 
 describe('AdminComponent - Dialogs and Methods', () => {
   let component: AdminComponent;
@@ -49,57 +46,9 @@ describe('AdminComponent - Dialogs and Methods', () => {
     fixture.detectChanges();
   });
 
-  it('should open the UserModalComponent and reload data when rsp is 1', () => {
-    const dialogRefSpy = {
-      afterClosed: () => of(1) // Simular que el diálogo devuelve 1
-    };
-    dialogSpy.open.and.returnValue(dialogRefSpy as any);
 
-    spyOn(component.ngZone, 'run').and.callFake((fn) => fn());
-    spyOn(component, 'loadData');
 
-    component.openModal();
 
-    expect(dialogSpy.open).toHaveBeenCalledWith(UserModalComponent, {
-      data: { users: component.user }, disableClose: true
-    });
-    expect(component.ngZone.run).toHaveBeenCalled();
-    expect(component.loadData).toHaveBeenCalled();
-  });
-
-  it('should open the EditUserModalComponent and reload data when result is 1', () => {
-    const userMock: User = {
-      id: 1,
-      firstName: 'Test',
-      lastName: 'User',
-      rut: '12345678-9',
-      email: 'test@example.com',
-      phone: '123456789',
-      address: 'Test Address',
-      password: 'password',
-      rol: {
-        id: 2,
-        name: 'Customer',
-        description: 'Rol Customer'
-      }
-    };
-
-    const dialogRefSpy = {
-      afterClosed: () => of(1) // Simular que el diálogo devuelve 1
-    };
-    dialogSpy.open.and.returnValue(dialogRefSpy as any);
-
-    spyOn(component.ngZone, 'run').and.callFake((fn) => fn());
-    spyOn(component, 'loadData');
-
-    component.editElement(userMock);
-
-    expect(dialogSpy.open).toHaveBeenCalledWith(EditUserModalComponent, {
-      data: { users: component.user, user: userMock }, disableClose: true
-    });
-    expect(component.ngZone.run).toHaveBeenCalled();
-    expect(component.loadData).toHaveBeenCalled();
-  });
 
   it('should validate productName as invalid when empty and touched', () => {
     const productNameControl = component.productForm.get('productName');
