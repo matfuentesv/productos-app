@@ -28,6 +28,16 @@ export const endpoints = {
     name: 'UpdateUser',
     description: 'Actualiza información del usuario',
     path: 'http://localhost:8081/api/updateUser'
+  },
+  deleteUser: {
+    name: 'Delete User',
+    description: 'elimina usuario',
+    path: 'http://localhost:8081/api/deleteUser/'
+  },
+  findAllOrders: {
+    name: 'Find Orders',
+    description: 'Listar ordenes de compra',
+    path: 'http://localhost:8082/api/orders'
   }
 
 }

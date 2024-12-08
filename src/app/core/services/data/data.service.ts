@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {Observable} from 'rxjs';
-import {ProductsResponse} from "../../../shared/models/products";
+import {Order, ProductsResponse} from "../../../shared/models/products";
 import {User} from "../../../shared/models/user";
 import {endpoints} from '../../../enviroments/endpoints';
 
@@ -46,12 +46,13 @@ export class DataService {
     return this.http.post<any>(endpoints.createUser.path, user,);
   }
 
-  updateUser(user: User): Observable<User> {
+  updateUser(user: any): Observable<any> {
     return this.http.put<any>(endpoints.updateUser.path, user,);
   }
 
-
-
+  deleteUser(email: string): Observable<any> {
+    return this.http.delete<any>(endpoints.deleteUser.path + email,);
+  }
 
   getUsers(): Observable<User[]> {
     return this.http.get<User[]>(endpoints.findAllUsers.path);
@@ -60,5 +61,9 @@ export class DataService {
   addUser(user:User[]) {
     console.log(user);
     return  this.http.post(endpoints.findAllUsers.path,user,this.httpOptions);
+  }
+
+  getOders(): Observable<Order[]> {
+    return this.http.get<Order[]>(endpoints.findAllOrders.path);
   }
 }

@@ -55,11 +55,11 @@ export class RegisterComponent implements OnInit {
     this.users = this.authService.loadUsers();
     this.objectUser = this.authService.getUser();
     this.registerForm = this.fb.group({
-      firstName: ['', Validators.required],
-      lastName: ['', Validators.required],
+      firstName: ['', [Validators.required,Validators.minLength(3)]],
+      lastName: ['', [Validators.required,Validators.minLength(3)]],
       rut: ['', [Validators.required, RutValidatorDirective.validate]],
       email: ['', [Validators.required, Validators.email]],
-      phone: ['', Validators.required],
+      phone: ['', [Validators.required,Validators.minLength(3),Validators.maxLength(9)]],
       address: ['', Validators.required],
       password: ['', [
         Validators.required,

@@ -60,17 +60,17 @@ export class UserModalComponent implements OnInit {
 
   ngOnInit(): void {
     this.userForm = this.fb.group({
-      firstName: ['', Validators.required],
-      lastName: ['', Validators.required],
+      firstName: ['', [Validators.required,Validators.minLength(3)]],
+      lastName: ['', [Validators.required,Validators.minLength(3)]],
       rut: ['', [Validators.required, RutValidatorDirective.validate]],
       email: ['', [Validators.required, Validators.email]],
-      phone: ['', Validators.required],
+      phone: ['', [Validators.required,Validators.minLength(3),Validators.maxLength(9)]],
       address: ['', Validators.required],
       password: ['', [
         Validators.required,
-        Validators.pattern('^(?=.*[A-Z])(?=.*\\d).{6,18}$'),
         Validators.minLength(6),
-        Validators.maxLength(18)
+        Validators.maxLength(18),
+        Validators.pattern('^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{6,18}$')
       ]],
       rol: [null, Validators.required],
     });
@@ -87,7 +87,7 @@ export class UserModalComponent implements OnInit {
   onSubmit() {
     if (this.userForm.valid) {
 
-      const newUser: User = {
+      const newUser = {
         id: this.user.length > 0 ? Math.max(...this.user.map((p: any) => p.id)) + 1 : 1,
         firstName: this.userForm.get('firstName')?.value,
         lastName: this.userForm.get('lastName')?.value,
@@ -96,25 +96,35 @@ export class UserModalComponent implements OnInit {
         phone: this.userForm.get('phone')?.value,
         address: this.userForm.get('address')?.value,
         password: this.userForm.get('password')?.value,
-        rol: this.userForm.get('roles')?.value
+        rol: {
+          id: Number(this.userForm.get('rol')?.value)
+        }
       };
-      this.user.push(newUser);
-      this.dataService.addUser(this.user).subscribe(rsp => {
-        this.snackBar.open('Usuario creado correctamente!', '', {
-          horizontalPosition: this.horizontalPosition,
-          verticalPosition: this.verticalPosition,
-          duration: 3000,
-          panelClass: ['custom-snackbar']
-        });
-        this.close(1);
-      })
+
+      this.dataService.createUser(newUser).subscribe(rsp=>{
+        if(rsp){
+          this.snackBar.open('Usuario creado correctamente!', '', {
+            horizontalPosition: this.horizontalPosition,
+            verticalPosition: this.verticalPosition,
+            duration: 3000,
+            panelClass: ['custom-snackbar']
+          });
+          this.close(1);
+        }
+      });
     }
   }
 
-  validateNumbers(event: KeyboardEvent): boolean {
-    const charCode = event.charCode || event.keyCode;
-    // Permitir números (0-9) y el carácter "+"
-    return (charCode >= 48 && charCode <= 57) || charCode === 43;
+  validateNumbers(event: { charCode: number; }){
+    return (event.charCode >= 48 && event.charCode <= 57) || event.charCode === 107;
+  }
+
+  validateCharacters(event: { charCode: number; }): boolean {
+    return (
+      (event.charCode >= 65 && event.charCode <= 90) || // Letras mayúsculas (A-Z)
+      (event.charCode >= 97 && event.charCode <= 122) || // Letras minúsculas (a-z)
+      event.charCode === 32 // Espacios
+    );
   }
 
 

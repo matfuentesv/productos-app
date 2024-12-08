@@ -13,6 +13,7 @@ import {MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition}
 import {DataService} from "../../../core/services/data/data.service";
 import {User} from "../../models/user";
 import {AuthService} from "../../../core/services/auth/auth.service";
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-edit-user-modal',
@@ -50,26 +51,26 @@ export class EditUserModalComponent  implements OnInit{
               private snackBar: MatSnackBar,
               private authService: AuthService,
               public dialogRef: MatDialogRef<EditUserModalComponent>) {
-    this.users = data.users;
+    this.users = data.user;
     this.objectUser = data.user;
   }
 
   ngOnInit(): void {
     this.loggedUser = this.authService.getUser();
     this.userForm = this.fb.group({
-      firstName: [this.objectUser.firstName, Validators.required],
-      lastName: [this.objectUser.lastName, Validators.required],
+      firstName: [this.objectUser.firstName, [Validators.required,Validators.minLength(3)]],
+      lastName: [this.objectUser.lastName, [Validators.required,Validators.minLength(3)]],
       rut: [this.objectUser.rut, [Validators.required, RutValidatorDirective.validate]],
       email: [this.objectUser.email, [Validators.required, Validators.email]],
-      phone: [this.objectUser.phone, Validators.required],
+      phone: [this.objectUser.phone, [Validators.required,Validators.minLength(3),Validators.maxLength(9)]],
       address: [this.objectUser.address, Validators.required],
       password: [this.objectUser.password, [
         Validators.required,
-        Validators.pattern('^(?=.*[A-Z])(?=.*\\d).{6,18}$'),
         Validators.minLength(6),
-        Validators.maxLength(18)
+        Validators.maxLength(18),
+        Validators.pattern('^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{6,18}$')
       ]],
-      rol: [this.objectUser.rol, Validators.required]
+      rol: [this.objectUser.rol.id, Validators.required]
     });
   }
 
@@ -82,37 +83,41 @@ export class EditUserModalComponent  implements OnInit{
   onSubmit() {
     if (this.userForm.valid) {
 
-      const index = this.users.findIndex((elemento: any) => elemento.id === this.objectUser.id);
-
-      if (index !== -1) {
-        this.users[index].firstName = this.userForm.get('firstName')?.value;
-        this.users[index].lastName = this.userForm.get('lastName')?.value;
-        this.users[index].rut = this.userForm.get('rut')?.value;
-        this.users[index].email = this.userForm.get('email')?.value;
-        this.users[index].phone = this.userForm.get('phone')?.value;
-        this.users[index].address = this.userForm.get('address')?.value;
-        this.users[index].password = this.userForm.get('password')?.value;
-        this.users[index].rol = this.userForm.get('roles')?.value;
-
-        this.dataService.addUser(this.users).subscribe(rsp => {
-          this.snackBar.open('Usuario actualizado correctamente!', '', {
-            horizontalPosition: this.horizontalPosition,
-            verticalPosition: this.verticalPosition,
-            duration: 3000,
-            panelClass: ['custom-snackbar']
-          });
-
-          if(this.loggedUser?.id === this.users[index].id){
-            this.authService.isLoggedIn.next(true);
-            this.authService.userNameSubject.next(this.users[index].firstName);
-            this.authService.userRoleSubject.next(this.users[index].rol.name ==='Admmin' ? 'admin' : 'customer');
-            this.authService.currentUser = this.users[index];
+      Swal.fire({
+        title: '¿Estás seguro?',
+        text: '¡No podrás revertir esto!',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Sí, actualizar!'
+      }).then((result) => {
+        const updateUser = {
+          id: this.objectUser.id,
+          firstName: this.userForm.get('firstName')?.value,
+          lastName: this.userForm.get('lastName')?.value,
+          rut: this.userForm.get('rut')?.value,
+          email: this.userForm.get('email')?.value,
+          phone: this.userForm.get('phone')?.value,
+          address: this.userForm.get('address')?.value,
+          password: this.userForm.get('password')?.value,
+          rol: {
+            id: Number(this.userForm.get('rol')?.value)
           }
+        };
 
-          this.close(1);
-        })
-      }
-
+        this.dataService.updateUser(updateUser).subscribe(rsp=>{
+          if(rsp){
+            this.snackBar.open('Usuario actualizado correctamente!', '', {
+              horizontalPosition: this.horizontalPosition,
+              verticalPosition: this.verticalPosition,
+              duration: 3000,
+              panelClass: ['custom-snackbar']
+            });
+            this.close(1);
+          }
+        });
+      });
     }
   }
 

@@ -18,3 +18,10 @@ export interface ProductsResponse {
   airConditioning:Products[];
   outstanding: Products[];
 }
+
+export interface Order {
+  orderId: number;
+  userName: string;
+  totalAmount: number;
+  products: Products[];
+}

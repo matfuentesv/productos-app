@@ -11,7 +11,7 @@
       <div class="col-md-6">
         <mat-form-field appearance="fill" class="w-100">
           <mat-label>Nombre</mat-label>
-          <input matInput formControlName="firstName" required>
+          <input (keypress)='validateCharacters($event)'   matInput formControlName="firstName" required>
           <mat-error *ngIf="userForm.get('firstName')?.invalid && userForm.get('firstName')?.touched">
             <small class="error" *ngIf="userForm.get('firstName')?.errors?.['required']">El nombre es obligatorio.</small>
           </mat-error>
@@ -20,7 +20,7 @@
       <div class="col-md-6">
         <mat-form-field appearance="fill" class="w-100">
           <mat-label>Apellidos</mat-label>
-          <input matInput formControlName="lastName" required>
+          <input (keypress)='validateCharacters($event)' matInput formControlName="lastName" required>
           <mat-error *ngIf="userForm.get('lastName')?.invalid && userForm.get('lastName')?.touched">
             <small class="error" *ngIf="userForm.get('lastName')?.errors?.['required']">El apellido es obligatorio.</small>
           </mat-error>
@@ -41,7 +41,7 @@
       <div class="col-md-6">
         <mat-form-field appearance="fill" class="w-100">
           <mat-label>Teléfono</mat-label>
-          <input matInput (keypress)='validateNumbers($event)'  formControlName="phone" required>
+          <input (keypress)='validateNumbers($event)' maxlength="9" matInput (keypress)='validateNumbers($event)'  formControlName="phone" required>
           <mat-error *ngIf="userForm.get('phone')?.invalid && userForm.get('phone')?.touched">
             <small class="error" *ngIf="userForm.get('phone')?.errors?.['required']">El celular es obligatorio.</small>
           </mat-error>
@@ -62,12 +62,12 @@
       <div class="col-md-6">
         <mat-form-field appearance="fill" class="w-100">
           <mat-label>Rol</mat-label>
-          <mat-select formControlName="roles" required>
-            <mat-option value="admin">Admin</mat-option>
-            <mat-option value="customer">Customer</mat-option>
+          <mat-select formControlName="rol" required>
+            <mat-option value="1">Admin</mat-option>
+            <mat-option value="2">Customer</mat-option>
           </mat-select>
-          <mat-error *ngIf="userForm.get('roles')?.invalid && userForm.get('roles')?.touched">
-            <small class="error" *ngIf="userForm.get('roles')?.errors?.['required']">El rol es obligatorio.</small>
+          <mat-error *ngIf="userForm.get('rol')?.invalid && userForm.get('rol')?.touched">
+            <small class="error" *ngIf="userForm.get('rol')?.errors?.['required']">El rol es obligatorio.</small>
           </mat-error>
         </mat-form-field>
       </div>
@@ -85,7 +85,7 @@
       <div class="col-md-6">
         <mat-form-field appearance="fill" class="w-100">
           <mat-label>Contraseña</mat-label>
-          <input matInput formControlName="password" required>
+          <input type="password" matInput formControlName="password" required>
           <mat-error *ngIf="userForm.get('password')?.invalid && userForm.get('password')?.touched">
             <small class="error" *ngIf="userForm.get('password')?.errors?.['required']">La constraseña es obligatorio.</small>
           </mat-error>

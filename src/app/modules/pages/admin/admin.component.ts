@@ -1,6 +1,7 @@
-import {AfterViewChecked, AfterViewInit, ChangeDetectorRef, Component, NgZone, OnInit, ViewChild} from '@angular/core';
+// admin.component.ts
+import {AfterViewChecked, AfterViewInit, ChangeDetectorRef, Component, NgZone, OnInit, ViewChild,} from "@angular/core";
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
-import {NgIf} from "@angular/common";
+import {DatePipe, NgIf} from "@angular/common";
 import {DataService} from "../../../core/services/data/data.service";
 import {
   MatCell,
@@ -13,25 +14,23 @@ import {
   MatRow,
   MatRowDef,
   MatTable,
-  MatTableDataSource
+  MatTableDataSource,
 } from "@angular/material/table";
-import {MatPaginator} from "@angular/material/paginator";
-import {User} from "../../../shared/models/user";
-
 import {catchError, map, merge, of, startWith, switchMap} from "rxjs";
-import {MatProgressSpinner, MatSpinner} from "@angular/material/progress-spinner";
 import {MatDialog} from "@angular/material/dialog";
+import {MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition,} from "@angular/material/snack-bar";
+import Swal from "sweetalert2";
 import {UserModalComponent} from "../../../shared/components/user-modal/user-modal.component";
-import {MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition} from "@angular/material/snack-bar";
-import {Ng2Rut2} from "../../../shared/directives/ng2-rut/ng2-rut.module";
-import {MatButton, MatIconButton} from "@angular/material/button";
-import {MatIcon} from "@angular/material/icon";
-import Swal from 'sweetalert2';
 import {EditUserModalComponent} from "../../../shared/components/edit-user-modal/edit-user-modal.component";
-import {Products} from "../../../shared/models/products";
-import {MatListItem, MatNavList} from "@angular/material/list";
-import {MatSidenav, MatSidenavContainer, MatSidenavContent} from "@angular/material/sidenav";
+import {Order, Products} from "../../../shared/models/products";
+import {User} from "../../../shared/models/user";
+import {MatSidenavModule} from "@angular/material/sidenav";
+import {MatListModule} from "@angular/material/list";
+import {MatIconModule} from "@angular/material/icon";
+import {MatButtonModule} from "@angular/material/button";
 import {CustomCurrencyPipe} from "../../../shared/pipes/customCurrency";
+import {MatProgressSpinner} from "@angular/material/progress-spinner";
+import {MatPaginator} from "@angular/material/paginator";
 
 interface ProductResponse {
   notebooks: Products[];
@@ -41,66 +40,76 @@ interface ProductResponse {
 }
 
 @Component({
-  selector: 'app-admin',
+  selector: "app-admin",
   standalone: true,
   imports: [
     ReactiveFormsModule,
     NgIf,
     MatTable,
+    MatPaginator,
+    MatSidenavModule,
+    MatListModule,
+    MatIconModule,
+    MatButtonModule,
+    CustomCurrencyPipe,
+    MatProgressSpinner,
     MatHeaderCell,
     MatCell,
     MatColumnDef,
     MatHeaderRow,
     MatRow,
-    MatCellDef,
-    MatRowDef,
     MatHeaderCellDef,
+    MatCellDef,
     MatHeaderRowDef,
-    MatPaginator,
-    MatSpinner,
-    Ng2Rut2,
-    MatIconButton,
-    MatIcon,
-    MatListItem,
-    MatButton,
-    MatNavList,
-    MatSidenavContent,
-    MatSidenavContainer,
-    MatSidenav,
-    CustomCurrencyPipe,
-    MatProgressSpinner
+    MatRowDef,
+    DatePipe,
   ],
-  templateUrl: './admin.component.html',
-  styleUrls: ['./admin.component.css']
+  templateUrl: "./admin.component.html",
+  styleUrls: ["./admin.component.css"],
 })
 export class AdminComponent implements OnInit, AfterViewInit, AfterViewChecked {
-
-  currentSection: string = 'products';
+  currentSection: string = "products";
 
   productForm: FormGroup;
 
-  horizontalPosition: MatSnackBarHorizontalPosition = 'start';
+  horizontalPosition: MatSnackBarHorizontalPosition = "start";
+  verticalPosition: MatSnackBarVerticalPosition = "bottom";
 
-  verticalPosition: MatSnackBarVerticalPosition = 'bottom';
-
-  displayedColumns: string[] = ['firstName', 'lastName', 'rut', 'email', 'phone', 'address', 'roles', 'edit', 'delete'];
-  productDisplayedColumns: string[] = ['name', 'price', 'discount', 'description', 'category', 'quantity'];
+  displayedColumns: string[] = [
+    "firstName",
+    "lastName",
+    "rut",
+    "email",
+    "phone",
+    "address",
+    "roles",
+    "edit",
+    "delete",
+  ];
+  productDisplayedColumns: string[] = [
+    "name",
+    "price",
+    "discount",
+    "description",
+    "category",
+    "quantity",
+  ];
+  orderDisplayedColumns: string[] = ["id", "userName", "totalAmount", "createdAt"];
 
   dataSource = new MatTableDataSource<User>();
   productDataSource = new MatTableDataSource<Products>();
+  dataSourceOrders = new MatTableDataSource<Order>();
 
   resultsLength = 0;
   productResultsLength = 0;
+  orderResultsLength = 0;
 
   isLoadingResults = true;
-
-  user: User[] = [];
-
-
   loading: boolean = true;
 
-  @ViewChild('userPaginator') userPaginator!: MatPaginator;
-  @ViewChild('productPaginator') productPaginator!: MatPaginator;
+  @ViewChild("userPaginator") userPaginator!: MatPaginator;
+  @ViewChild("productPaginator") productPaginator!: MatPaginator;
+  @ViewChild("ordersPaginator") ordersPaginator!: MatPaginator;
 
   constructor(
     private fb: FormBuilder,
@@ -108,14 +117,15 @@ export class AdminComponent implements OnInit, AfterViewInit, AfterViewChecked {
     private cdr: ChangeDetectorRef,
     public ngZone: NgZone,
     private dialog: MatDialog,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private dataService: DataService
   ) {
     this.productForm = this.fb.group({
-      productName: ['', Validators.required],
-      description: ['', Validators.required],
-      price: ['', Validators.required],
-      category: ['', Validators.required],
-      image: ['']
+      productName: ["", Validators.required],
+      description: ["", Validators.required],
+      price: ["", Validators.required],
+      category: ["", Validators.required],
+      image: [""]
     });
   }
 
@@ -138,14 +148,21 @@ export class AdminComponent implements OnInit, AfterViewInit, AfterViewChecked {
     if (this.userPaginator && !this.dataSource.paginator) {
       this.ngZone.runOutsideAngular(() => {
         this.dataSource.paginator = this.userPaginator;
-        this.setupPagination(this.userPaginator, 'users');
+        this.setupPagination(this.userPaginator, "users");
       });
     }
 
     if (this.productPaginator && !this.productDataSource.paginator) {
       this.ngZone.runOutsideAngular(() => {
         this.productDataSource.paginator = this.productPaginator;
-        this.setupPagination(this.productPaginator, 'products');
+        this.setupPagination(this.productPaginator, "products");
+      });
+    }
+
+    if (this.ordersPaginator && !this.dataSourceOrders.paginator) {
+      this.ngZone.runOutsideAngular(() => {
+        this.dataSourceOrders.paginator = this.ordersPaginator;
+        this.setupPagination(this.ordersPaginator, "orders");
       });
     }
   }
@@ -156,66 +173,102 @@ export class AdminComponent implements OnInit, AfterViewInit, AfterViewChecked {
         startWith({}),
         switchMap(() => {
           this.isLoadingResults = true;
-          return section === 'users'
-            ? this.userService.getUsers().pipe(catchError(() => of([] as User[])))
-            : this.userService.getProducts().pipe(catchError(() => of({ notebooks: [], cellPhones: [], coffeeMakers: [], airConditioning: [] } as ProductResponse)));
-        }),
-        map(data => {
-          this.isLoadingResults = false;
-          if (section === 'users') {
-            return data;
-          } else {
-            const products = data as ProductResponse;
-            return [...products.notebooks, ...products.cellPhones, ...products.coffeeMakers, ...products.airConditioning];
+
+          switch (section) {
+            case "users":
+              return this.userService
+                .getUsers()
+                .pipe(catchError(() => of([] as User[])));
+            case "products":
+              return this.userService.getProducts().pipe(
+                catchError(() =>
+                  of({
+                    notebooks: [],
+                    cellPhones: [],
+                    coffeeMakers: [],
+                    airConditioning: [],
+                  } as ProductResponse)
+                )
+              );
+            case "orders":
+              return this.dataService
+                .getOders()
+                .pipe(catchError(() => of([] as Order[])));
+            default:
+              return of([]);
           }
+        }),
+        map((data) => {
+          this.isLoadingResults = false;
+
+          if (section === "products") {
+            const products = data as ProductResponse;
+            return [
+              ...products.notebooks,
+              ...products.cellPhones,
+              ...products.coffeeMakers,
+              ...products.airConditioning,
+            ];
+          }
+
+          return data;
         })
       )
-      .subscribe(data => {
+      .subscribe((data) => {
         this.ngZone.run(() => {
-          if (section === 'users') {
-            this.dataSource.data = data as User[];
-            this.resultsLength = (data as User[]).length;
-          } else {
-            this.productDataSource.data = data as Products[];
-            this.productResultsLength = (data as Products[]).length;
+          switch (section) {
+            case "users":
+              this.dataSource.data = data as User[];
+              this.resultsLength = (data as User[]).length;
+              break;
+            case "products":
+              this.productDataSource.data = data as Products[];
+              this.productResultsLength = (data as Products[]).length;
+              break;
+            case "orders":
+              this.dataSourceOrders.data = data as Order[];
+              this.orderResultsLength = (data as Order[]).length;
+              break;
           }
           this.cdr.detectChanges();
         });
       });
   }
 
-
   loadData() {
     this.loading = true;
-    this.userService.getUsers().subscribe(users => {
-      this.user = users;
-      this.dataSource.data = this.user;
-      this.resultsLength = this.user.length;
-      this.isLoadingResults = false;
-      this.cdr.detectChanges();
-      this.loading = false;
-    },error => {
-      console.error(error);
-      this.loading = false;
-    });
+    this.userService.getUsers().subscribe(
+      (users) => {
+        this.dataSource.data = users;
+        this.resultsLength = users.length;
+        this.loading = false;
+      },
+      (error) => {
+        console.error(error);
+        this.loading = false;
+      }
+    );
   }
 
   private loadProducts() {
     this.loading = true;
-    this.userService.getProducts().subscribe((products: ProductResponse) => {
-      const allProducts = [
-        ...products.notebooks,
-        ...products.cellPhones,
-        ...products.coffeeMakers,
-        ...products.airConditioning
-      ];
-      this.productDataSource.data = allProducts;
-      this.productResultsLength = allProducts.length;
-      this.loading = false;
-    },error => {
-      console.error(error);
-      this.loading = false;
-    });
+    this.userService.getProducts().subscribe(
+      (products: ProductResponse) => {
+        const allProducts = [
+          ...products.notebooks,
+          ...products.cellPhones,
+          ...products.coffeeMakers,
+          ...products.airConditioning,
+        ];
+        this.productDataSource.data = allProducts;
+        this.productResultsLength = allProducts.length;
+        this.loading = false;
+      },
+      (error) => {
+        console.error(error);
+        this.loading = false;
+      }
+    );
   }
 
   showSection(event: Event, section: string): void {
@@ -223,72 +276,49 @@ export class AdminComponent implements OnInit, AfterViewInit, AfterViewChecked {
     this.currentSection = section;
   }
 
-
-
-  get validProductName() {
-    return this.productForm.get('productName')?.invalid && this.productForm.get('productName')?.touched;
-  }
-
-  get validProductDescription() {
-    return this.productForm.get('description')?.invalid && this.productForm.get('description')?.touched;
-  }
-
-  get validProductPrice() {
-    return this.productForm.get('price')?.invalid && this.productForm.get('price')?.touched;
-  }
-
-  get validProductCategory() {
-    return this.productForm.get('category')?.invalid && this.productForm.get('category')?.touched;
-  }
-
   openModal() {
-    const dialogRef = this.dialog.open(UserModalComponent, { data: { users: this.user },disableClose: true });
-    dialogRef.afterClosed().subscribe((rsp) => {
-     if(rsp ===1){
-       this.ngZone.run(() => {
-         this.loadData();
-       });
-     }
+    const dialogRef = this.dialog.open(UserModalComponent, {
+      data: { users: this.dataSource.data },
+      disableClose: true,
+    });
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result === 1) {
+        this.loadData();
+      }
     });
   }
 
-  editElement(object: User) {
-    const dialogRef = this.dialog.open(EditUserModalComponent, { data: { users: this.user, user: object }, disableClose: true });
-    dialogRef.afterClosed().subscribe(result => {
-      if(result ===1){
-        this.ngZone.run(() => {
-          this.loadData();
-        });
+  editElement(user: User) {
+    const dialogRef = this.dialog.open(EditUserModalComponent, {
+      data: { user },
+      disableClose: true,
+    });
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result === 1) {
+        this.loadData();
       }
     });
   }
 
   deleteElement(user: User) {
     Swal.fire({
-      title: '¿Estás seguro?',
-      text: '¡No podrás revertir esto!',
-      icon: 'warning',
+      title: "¿Estás seguro?",
+      text: "¡No podrás revertir esto!",
+      icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Sí, eliminarlo!'
+      confirmButtonText: "Sí, eliminarlo",
+      cancelButtonText: "Cancelar",
     }).then((result) => {
       if (result.isConfirmed) {
-        const index = this.user.findIndex((x: any) => x.id === user.id);
-
-        if (index !== -1) {
-          this.user.splice(index, 1);
-          this.userService.addUser(this.user).subscribe((rsp) => {
-            this.snackBar.open('¡Usuario eliminado correctamente!', '', {
-              horizontalPosition: this.horizontalPosition,
-              verticalPosition: this.verticalPosition,
-              duration: 3000,
-              panelClass: ['custom-snackbar']
-            });
-            this.loadData();
+        this.dataService.deleteUser(user.email).subscribe(() => {
+          this.snackBar.open("Usuario eliminado correctamente", "", {
+            duration: 3000,
           });
-        }
+          this.loadData();
+        });
       }
     });
   }
 }
+
+// Additional modules and services remain unchanged unless further modifications are required.
