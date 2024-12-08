@@ -125,4 +125,43 @@ describe('UserModalComponent', () => {
     const result = component.validateNumbers(invalidEvent);
     expect(result).toBeFalse();
   });
+
+  it('should return true for valid character input (uppercase letters)', () => {
+    const validEventUppercase = { charCode: 65 } as KeyboardEvent; // Char code for 'A'
+    const result = component.validateCharacters(validEventUppercase);
+    expect(result).toBeTrue();
+  });
+
+  it('should return true for valid character input (lowercase letters)', () => {
+    const validEventLowercase = { charCode: 97 } as KeyboardEvent; // Char code for 'a'
+    const result = component.validateCharacters(validEventLowercase);
+    expect(result).toBeTrue();
+  });
+
+  it('should return true for space character input', () => {
+    const spaceEvent = { charCode: 32 } as KeyboardEvent; // Char code for space
+    const result = component.validateCharacters(spaceEvent);
+    expect(result).toBeTrue();
+  });
+
+  it('should return false for numeric input', () => {
+    const invalidNumericEvent = { charCode: 48 } as KeyboardEvent; // Char code for '0'
+    const result = component.validateCharacters(invalidNumericEvent);
+    expect(result).toBeFalse();
+  });
+
+  it('should return false for special character input', () => {
+    const invalidSpecialCharEvent = { charCode: 33 } as KeyboardEvent; // Char code for '!'
+    const result = component.validateCharacters(invalidSpecialCharEvent);
+    expect(result).toBeFalse();
+  });
+
+  it('should throw an error for null input', () => {
+    expect(() => component.validateCharacters(null as any)).toThrowError();
+  });
+
+  it('should throw an error for undefined input', () => {
+    expect(() => component.validateCharacters(undefined as any)).toThrowError();
+  });
+
 });
