@@ -86,7 +86,7 @@ export class CartComponent implements OnInit {
 
     this.dataService.createOrder(orderPayload).subscribe(rsp =>{
        if(rsp.success){
-         this.snackBar.open('Usuario actualizado correctamente!', '', {
+         this.snackBar.open('Orden de compra guardada con exito', '', {
            horizontalPosition: this.horizontalPosition,
            verticalPosition: this.verticalPosition,
            duration: 3000,
