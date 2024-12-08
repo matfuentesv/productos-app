@@ -109,8 +109,6 @@ export class RegisterComponent implements OnInit {
 
   async onSubmit(): Promise<void> {
     if (this.registerForm.valid) {
-      console.log(this.registerForm.value);
-
       const newUser = {
         rut: this.registerForm.get('rut')?.value,
         firstName: this.registerForm.get('firstName')?.value,
