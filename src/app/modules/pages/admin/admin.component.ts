@@ -94,7 +94,7 @@ export class AdminComponent implements OnInit, AfterViewInit, AfterViewChecked {
     "category",
     "quantity",
   ];
-  orderDisplayedColumns: string[] = ["id", "userName", "totalAmount", "createdAt"];
+  orderDisplayedColumns: string[] = ["orderId", "userName", "totalAmount"];
 
   dataSource = new MatTableDataSource<User>();
   productDataSource = new MatTableDataSource<Products>();
