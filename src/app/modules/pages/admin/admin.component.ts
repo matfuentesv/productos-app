@@ -192,7 +192,7 @@ export class AdminComponent implements OnInit, AfterViewInit, AfterViewChecked {
               );
             case "orders":
               return this.dataService
-                .getOders()
+                .getOrders()
                 .pipe(catchError(() => of([] as Order[])));
             default:
               return of([]);

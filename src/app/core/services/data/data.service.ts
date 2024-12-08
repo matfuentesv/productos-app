@@ -63,7 +63,7 @@ export class DataService {
     return  this.http.post(endpoints.findAllUsers.path,user,this.httpOptions);
   }
 
-  getOders(): Observable<Order[]> {
+  getOrders(): Observable<Order[]> {
     return this.http.get<Order[]>(endpoints.findAllOrders.path);
   }
 }
