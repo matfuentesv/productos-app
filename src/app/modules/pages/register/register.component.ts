@@ -127,9 +127,9 @@ export class RegisterComponent implements OnInit {
         this.dataService.createUser(newUser).subscribe(rsp=>{
              if(rsp){
                  this.authService.isLoggedIn.next(true);
-                 this.authService.userNameSubject.next(rsp?.body.firstName);
-                 this.authService.userRoleSubject.next(rsp.body.rol.name ==='Admin'? 'admin' : 'customer');
-                 this.authService.currentUser = rsp.body;
+                 this.authService.userNameSubject.next(rsp?.firstName);
+                 this.authService.userRoleSubject.next(rsp.rol.name ==='Admin'? 'admin' : 'customer');
+                 this.authService.currentUser = rsp;
                  this.snackBar.open('Usuario creado correctamente!', '', {
                    horizontalPosition: this.horizontalPosition,
                    verticalPosition: this.verticalPosition,
